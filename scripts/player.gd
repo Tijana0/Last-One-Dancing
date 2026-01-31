@@ -18,6 +18,7 @@ var has_crown = false
 # IMPORTANT: Make sure your Sprite node is named "Sprite2D" in the scene tree!
 @onready var sprite = $Sprite2D 
 @onready var lives_container = $LivesContainer
+@onready var game_over_layer = $GameOverLayer
 
 # --- SETUP ---
 func _enter_tree():
@@ -25,6 +26,8 @@ func _enter_tree():
 	set_multiplayer_authority(name.to_int())
 
 func _ready():
+	print("PLAYER READY (Lives: ", lives, ") - If this prints often, node is resetting!")
+	
 	# Give every player a random color so we can tell them apart for now
 	if sprite:
 		sprite.modulate = Color(randf(), randf(), randf())
@@ -40,6 +43,9 @@ func _ready():
 		var camera = Camera2D.new()
 		add_child(camera)
 		camera.enabled = true
+		
+	if game_over_layer:
+		game_over_layer.visible = false
 
 # --- UI UPDATES ---
 func update_lives_ui():
@@ -170,6 +176,10 @@ func sync_lives(new_lives: int, killer_id: int):
 		visible = false
 		$CollisionShape2D.set_deferred("disabled", true)
 		set_physics_process(false) # Stop movement
+		
+		# Show Game Over screen ONLY if I am the one who died
+		if is_multiplayer_authority() and game_over_layer:
+			game_over_layer.visible = true
 		
 		# 2. Remove from "players" group so they can't be targeted anymore
 		remove_from_group("players")
