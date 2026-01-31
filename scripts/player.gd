@@ -148,8 +148,12 @@ func sync_lives(new_lives: int, killer_id: int):
 
 	if lives > 0:
 		# --- RESPAWN LOGIC ---
-		# Respawn at random location (Adjust 800/600 to your window size)
-		global_position = Vector2(randf_range(0, 800), randf_range(0, 600))
+		# Get actual screen size to ensure we respawn inside the view
+		var screen_size = get_viewport_rect().size
+		global_position = Vector2(
+			randf_range(50, screen_size.x - 50), 
+			randf_range(50, screen_size.y - 50)
+		)
 		
 		# Visual Feedback (Flash transparent)
 		if sprite:
