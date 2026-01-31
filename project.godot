@@ -11,9 +11,13 @@ config_version=5
 [application]
 
 config/name="LastOneDancing"
-run/main_scene="uid://c2wpwjt4cnl4v"
+run/main_scene="uid://b4cws048csabv"
 config/features=PackedStringArray("4.6", "Mobile")
 config/icon="res://icon.svg"
+
+[autoload]
+
+NetworkManager="*res://scripts/managers/network_manager.gd"
 
 [input]
 

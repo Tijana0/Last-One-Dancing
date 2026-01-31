@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://c6bjpr7x3e3cd"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bgv50"]
+
+[node name="Player" type="CharacterBody2D" unique_id=1053508573]
+
+[node name="Body" type="Sprite2D" parent="." unique_id=2110009695]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=148613396]
+shape = SubResource("CircleShape2D_bgv50")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1512662087]
+
+[node name="NameLabel" type="Label" parent="." unique_id=2099227980]
+offset_right = 40.0
+offset_bottom = 23.0
