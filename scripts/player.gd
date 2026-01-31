@@ -24,7 +24,12 @@ var is_npc = false
 # --- SETUP ---
 func _enter_tree():
 	# This helps the MultiplayerSpawner find this node and assign authority
-	set_multiplayer_authority(name.to_int())
+	var id = name.to_int()
+	if id == 0:
+		# If name is not a number (e.g. "CrownNPC"), assume Server (1) is authority
+		set_multiplayer_authority(1)
+	else:
+		set_multiplayer_authority(id)
 
 func _ready():
 	print("PLAYER READY (Lives: ", lives, ") - If this prints often, node is resetting!")
