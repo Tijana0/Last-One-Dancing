@@ -17,6 +17,7 @@ var has_crown = false
 # --- REFERENCES ---
 # IMPORTANT: Make sure your Sprite node is named "Sprite2D" in the scene tree!
 @onready var sprite = $Sprite2D 
+@onready var lives_container = $LivesContainer
 
 # --- SETUP ---
 func _enter_tree():
@@ -31,11 +32,22 @@ func _ready():
 	# CRITICAL: Add to group so players can find each other for killing
 	add_to_group("players")
 	
+	# Update UI initially
+	update_lives_ui()
+	
 	# Only enable a camera for the local player
 	if is_multiplayer_authority():
 		var camera = Camera2D.new()
 		add_child(camera)
 		camera.enabled = true
+
+# --- UI UPDATES ---
+func update_lives_ui():
+	if lives_container:
+		var hearts = lives_container.get_children()
+		for i in range(hearts.size()):
+			# Show heart if index is less than lives count
+			hearts[i].visible = i < lives
 
 # --- MOVEMENT LOOP ---
 func _physics_process(delta):
@@ -118,6 +130,7 @@ func attempt_kill():
 func take_damage(killer_id: int):
 	lives -= 1
 	print(name, " took damage! Lives remaining: ", lives)
+	update_lives_ui()
 
 	if lives > 0:
 		# --- RESPAWN LOGIC ---

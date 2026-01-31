@@ -15,3 +15,25 @@ texture = ExtResource("1_3vyb7")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=979406219]
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_g2els")
+
+[node name="LivesContainer" type="HBoxContainer" parent="."]
+offset_left = -64.0
+offset_top = -90.0
+offset_right = 64.0
+offset_bottom = -70.0
+alignment = 1
+
+[node name="Heart1" type="ColorRect" parent="LivesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(1, 0, 0, 1)
+
+[node name="Heart2" type="ColorRect" parent="LivesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(1, 0, 0, 1)
+
+[node name="Heart3" type="ColorRect" parent="LivesContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(1, 0, 0, 1)
