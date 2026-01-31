@@ -38,6 +38,9 @@ func _ready():
 
 # --- MOVEMENT LOOP ---
 func _physics_process(delta):
+	
+	print("I am running!")
+	
 	# CRITICAL: If this player node does not belong to me, STOP.
 	if not is_multiplayer_authority():
 		return
@@ -47,9 +50,13 @@ func _physics_process(delta):
 	velocity = direction * speed
 	move_and_slide()
 	
-	# Kill Input (Right Mouse Button)
-	# Make sure you added "kill" to your Input Map!
-	if Input.is_action_just_pressed("kill"):
+	# --- DEBUG TEST: BYPASS INPUT MAP ---
+	# We use is_physical_key_pressed to ignore the Input Map entirely
+	if Input.is_physical_key_pressed(KEY_K):
+		# We use 'just_pressed' logic manually to stop it from spamming
+		if not Input.is_action_just_pressed("kill"): # Just a check to see if map is working
+			print("Raw 'K' key detected, but Input Map 'kill' did NOT trigger!")
+		
 		attempt_kill()
 
 # --- NETWORK SYNC ---
@@ -69,36 +76,41 @@ func sync_transform(pos: Vector2, rot: float):
 # --- KILL SYSTEM FUNCTIONS ---
 
 func attempt_kill():
-	# 1. Check Cooldown
+	print("--- ATTEMPTING KILL ---") # 1. Confirm Input works
+	
+	# Check Cooldown
 	var current_time = Time.get_ticks_msec() / 1000.0
 	if current_time - last_kill_time < kill_cooldown:
-		print("Kill on cooldown!")
+		print("Failed: Cooldown active")
 		return 
 	
 	last_kill_time = current_time
 	
-	# 2. Find closest target
+	# Find players
 	var players = get_tree().get_nodes_in_group("players")
+	print("Found ", players.size(), " players in group.") # 2. Confirm Group works
+	
 	var killed_someone = false
 	
 	for player in players:
+		# Skip self
 		if player == self:
-			continue # Can't kill self
+			continue 
 			
 		# Check distance
 		var distance = global_position.distance_to(player.global_position)
+		print("Checking target: ", player.name, " | Distance: ", distance) # 3. Confirm Distance
 		
-		if distance < kill_range:
-			# 3. Kill them!
-			player.rpc("die")      # Tell them they died
-			rpc("add_kill")        # Tell everyone I got a kill
-			
-			print("Killed ", player.name)
+		# TEMPORARY: Increased range for testing
+		if distance < 300.0: # Increased from 100 to 300 to make testing easier
+			print("!!! KILL CONFIRMED on ", player.name, " !!!")
+			player.rpc("die")      
+			rpc("add_kill")        
 			killed_someone = true
-			break # Only kill one per click
+			break 
 			
 	if not killed_someone:
-		print("Missed! No one in range.")
+		print("Failed: No one close enough")
 
 # This function runs on EVERYONE'S computer to update the victim
 @rpc("any_peer", "call_local")
