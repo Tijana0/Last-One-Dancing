@@ -1,9 +1,14 @@
 [gd_scene format=3 uid="uid://b4cws048csabv"]
 
+[ext_resource type="Texture2D" uid="uid://b0p1q2r3s4t5" path="res://icon.svg" id="1_icon"]
 [ext_resource type="Script" uid="uid://uudgqu40wu" path="res://scripts/managers/network_manager.gd" id="1_cemok"]
 [ext_resource type="PackedScene" uid="uid://c6bjpr7x3e3cd" path="res://prefabs/player.tscn" id="2_bgv50"]
 
 [node name="NetworkManager" type="Node2D" unique_id=868023284]
 script = ExtResource("1_cemok")
+
+[node name="ReferencePoint" type="Sprite2D" parent="."]
+position = Vector2(200, 200)
+texture = ExtResource("1_icon")
 
 [node name="Player" parent="." unique_id=1053508573 instance=ExtResource("2_bgv50")]
