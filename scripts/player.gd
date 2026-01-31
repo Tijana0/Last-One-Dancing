@@ -190,8 +190,8 @@ func sync_lives(new_lives: int, killer_id: int):
 		$CollisionShape2D.set_deferred("disabled", true)
 		set_physics_process(false) # Stop movement
 		
-		# Show Game Over screen ONLY if I am the one who died
-		if is_multiplayer_authority() and game_over_layer:
+		# Show Game Over screen ONLY if I am the one who died AND I am not an NPC
+		if is_multiplayer_authority() and game_over_layer and not is_npc:
 			game_over_layer.visible = true
 		
 		# 2. Remove from "players" group so they can't be targeted anymore
