@@ -13,6 +13,7 @@ var player_name = "Player"
 var lives = 3
 var kill_count = 0
 var has_crown = false
+var is_npc = false
 
 # --- REFERENCES ---
 # IMPORTANT: Make sure your Sprite node is named "Sprite2D" in the scene tree!
@@ -186,6 +187,19 @@ func sync_lives(new_lives: int, killer_id: int):
 		
 		# 2. Remove from "players" group so they can't be targeted anymore
 		remove_from_group("players")
+		
+		# --- CHECK GAME STATE ---
+		var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
+		
+		if is_npc and has_crown:
+			# The Boss NPC died! The killer wins!
+			if game_manager:
+				game_manager.rpc("trigger_victory", killer_id)
+		else:
+			# A regular player died. Check if it's time to spawn the Boss.
+			# Only the server needs to do this check to avoid duplicate spawns
+			if game_manager and multiplayer.is_server():
+				game_manager.check_survivors()
 		
 		# 3. Award the kill to the killer
 		# We need to tell the killer to update their score.
