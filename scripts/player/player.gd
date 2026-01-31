@@ -25,7 +25,10 @@ func _ready():
 
 func _enter_tree():
 	# This helps the MultiplayerSpawner find this node
-	set_multiplayer_authority(name.to_int())
+	var id = name.to_int()
+	if id == 0:
+		id = 1
+	set_multiplayer_authority(id)
 
 func _physics_process(delta):
 	# Only control YOUR player
