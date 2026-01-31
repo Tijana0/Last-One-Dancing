@@ -77,6 +77,23 @@ func _physics_process(delta):
 	velocity = direction * speed
 	move_and_slide()
 	
+	# --- INTERACTION: PICKUP CROWN ---
+	if Input.is_physical_key_pressed(KEY_F):
+		if Input.is_action_just_pressed("interact") or true: # Hacky 'just pressed' check or rely on cooldown?
+			# Simple cooldown to prevent spamming RPCs
+			pass
+			
+		var pickups = get_tree().get_nodes_in_group("crown_pickups")
+		for pickup in pickups:
+			if global_position.distance_to(pickup.global_position) < 100.0:
+				print("Picking up crown!")
+				var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
+				if game_manager:
+					# I am the winner!
+					game_manager.rpc("trigger_victory", name.to_int())
+					# Destroy the pickup locally/remotely? Victory screen covers it.
+				break
+	
 	# --- DEBUG TEST: BYPASS INPUT MAP ---
 	# We use is_physical_key_pressed to ignore the Input Map entirely
 	if Input.is_physical_key_pressed(KEY_K):
@@ -201,9 +218,8 @@ func sync_lives(new_lives: int, killer_id: int):
 		var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
 		
 		if is_npc and has_crown:
-			# The Boss NPC died! The killer wins!
-			if game_manager:
-				game_manager.rpc("trigger_victory", killer_id)
+			# The Boss NPC died! Drop the crown!
+			become_crown_pickup()
 		else:
 			# A regular player died. Check if it's time to spawn the Boss.
 			# Only the server needs to do this check to avoid duplicate spawns
@@ -223,6 +239,27 @@ func sync_lives(new_lives: int, killer_id: int):
 		# Drop crown logic (Placeholder for next step)
 		if has_crown:
 			has_crown = false
+
+func become_crown_pickup():
+	print("BOSS DEFEATED! Crown dropped.")
+	
+	# Visuals: Looks like blood/dead body
+	if sprite:
+		sprite.modulate = Color(0.8, 0, 0) # Blood Red
+		rotation_degrees = 90 # Lying on side
+		scale = Vector2(1, 1) # Reset scale
+		
+	# Interaction Logic
+	add_to_group("crown_pickups")
+	
+	# Disable physics completely
+	$CollisionShape2D.set_deferred("disabled", true)
+	
+	# Optional: Add a label saying "Press F"
+	var label = Label.new()
+	label.text = "PRESS F"
+	label.position = Vector2(-30, -50)
+	add_child(label)
 
 # This function updates the killer's score
 @rpc("any_peer", "call_local")
