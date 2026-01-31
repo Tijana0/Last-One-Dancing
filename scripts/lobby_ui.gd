@@ -5,14 +5,17 @@ extends Control
 @onready var status = $CenterContainer/VBoxContainer/StatusLabel
 @onready var player_list_ui = $CenterContainer/VBoxContainer/PlayerList
 @onready var start_button = $CenterContainer/VBoxContainer/StartButton
-@onready var loading_overlay = $LoadingOverlay
+@onready var loading_panel = $LoadingPanel
 
 func _ready():
 	# Connect UI button signals to logic
 	$CenterContainer/VBoxContainer/HBoxContainer/HostButton.pressed.connect(_on_host_pressed)
 	$CenterContainer/VBoxContainer/HBoxContainer/JoinButton.pressed.connect(_on_join_pressed)
+	#$VBoxContainer/BackButton.pressed.connect(_on_back_pressed)
 	start_button.pressed.connect(_on_start_pressed)
 	
+	# Hide the loading screen when the lobby first opens
+	loading_panel.visible = false
 	# Listen for signals from Godot's multiplayer system
 	multiplayer.connected_to_server.connect(_on_connected)
 	multiplayer.connection_failed.connect(_on_failed)
@@ -29,7 +32,7 @@ func _on_join_pressed():
 	NetworkManager.join_server(ip, p_name) # Person 1's setup
 	status.text = "Attempting to join..."                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
 	status.modulate = Color.YELLOW
-	loading_overlay.visible = true
+	loading_panel.visible = true
 
 func _process(_delta):
 	update_player_list()
@@ -49,8 +52,12 @@ func _on_start_pressed():
 func _on_connected():
 	status.text = "Connected!"
 	status.modulate = Color.GREEN
+	loading_panel.visible = false
 
 func _on_failed():
 	status.text = "Connection Failed!"
 	status.modulate = Color.RED
-	loading_overlay.visible = false
+	loading_panel.visible = false
+	
+#func _on_back_pressed():
+#	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

@@ -15,8 +15,8 @@ func _ready():
 	multiplayer.connection_failed.connect(_on_connection_failed)
 
 # HOST creates a server
-func create_server(player_name: String):
-	self.player_name = player_name
+func create_server(p_name: String):
+	self.player_name = p_name
 	var peer = ENetMultiplayerPeer.new()
 	peer.create_server(PORT, MAX_PLAYERS)
 	multiplayer.multiplayer_peer = peer
@@ -92,3 +92,7 @@ func spawn_player(id: int, pname: String):
 	player.position = Vector2(randf_range(-400, 400), randf_range(-300, 300))
 	
 	get_tree().current_scene.add_child(player)
+	
+@rpc("any_peer", "call_local", "reliable")
+func start_game():
+	get_tree().change_scene_to_file("res://scenes/game_room.tscn")
