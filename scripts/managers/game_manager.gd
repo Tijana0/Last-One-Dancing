@@ -31,8 +31,9 @@ func check_survivors():
 	# So this triggers immediately if alone?
 	# Better to trigger if alive_count == 1.
 	if alive_count <= 1:
-		spawn_crown_npc()
+		spawn_crown_npc.rpc()
 
+@rpc("authority", "call_local")
 func spawn_crown_npc():
 	if crown_npc_spawned: return
 	crown_npc_spawned = true
