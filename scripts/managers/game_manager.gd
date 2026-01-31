@@ -48,7 +48,11 @@ func spawn_crown_npc():
 		
 	var npc = player_scene.instantiate()
 	npc.name = "CrownNPC" # Important for unique ID
-	npc.position = Vector2(0, 0) # Center
+	
+	# Start off-screen (Top)
+	var start_pos = Vector2(0, -600)
+	var end_pos = Vector2(0, 0)
+	npc.position = start_pos
 	
 	# Configure NPC properties
 	npc.is_npc = true
@@ -63,6 +67,10 @@ func spawn_crown_npc():
 	if npc.has_node("Sprite2D"):
 		npc.get_node("Sprite2D").modulate = Color(1, 0.8, 0) # Gold
 		npc.get_node("Sprite2D").scale = Vector2(1.5, 1.5) # Bigger
+		
+	# Animate Entry
+	var tween = create_tween()
+	tween.tween_property(npc, "position", end_pos, 2.0).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 
 @rpc("any_peer", "call_local")
 func trigger_victory(winner_id: int):
