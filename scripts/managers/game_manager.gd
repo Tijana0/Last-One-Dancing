@@ -27,4 +27,6 @@ func check_win_condition(player_id: int, kills: int):
 func announce_winner(player_id: int):
 	var player_name = NetworkManager.players.get(player_id, "Unknown")
 	print(player_name, " WINS!")
-	# Pe
+	# Restart game after 5 seconds
+	await get_tree().create_timer(5.0).timeout
+	get_tree().reload_current_scene()
