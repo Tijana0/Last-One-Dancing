@@ -23,13 +23,27 @@ func _ready():
 	# Set a random color for testing (Person 4 will replace with sprites)
 	sprite.modulate = Color(randf(), randf(), randf())
 
+func _enter_tree():
+	# This helps the MultiplayerSpawner find this node
+	var id = name.to_int()
+	if id == 0:
+		id = 1
+	set_multiplayer_authority(id)
+
 func _physics_process(delta):
+	# Debug print (remove later)
+	# print("Name: ", name, " Auth: ", is_multiplayer_authority(), " ID: ", multiplayer.get_unique_id())
+
 	# Only control YOUR player
 	if not is_multiplayer_authority():
 		return
 	
-	# Movement handled by player_movement.gd (Person 3 will add)
-	pass
+	# Basic movement
+	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	if direction != Vector2.ZERO:
+		print("Moving: ", direction)
+	velocity = direction * speed
+	move_and_slide()
 
 # Call this to kill another player
 @rpc("any_peer", "call_local")
@@ -58,9 +72,10 @@ func add_kill():
 func _process(delta):
 	if is_multiplayer_authority():
 		# Send position to other clients
-		rpc("sync_position", position)
+		rpc("sync_transform", position, rotation)
 
 @rpc("any_peer", "unreliable")
-func sync_position(pos: Vector2):
+func sync_transform(pos: Vector2, rot: float):
 	if not is_multiplayer_authority():
 		position = pos
+		rotation = rot
