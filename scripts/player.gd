@@ -115,20 +115,36 @@ func attempt_kill():
 		# TEMPORARY: Increased range for testing
 		if distance < 300.0: # Increased from 100 to 300 to make testing easier
 			print("!!! HIT CONFIRMED on ", player.name, " !!!")
-			# Pass my ID so the victim knows who hit them (for score credit)
-			player.rpc("take_damage", name.to_int())      
+			# Request damage on the victim (handled by their machine)
+			player.rpc_id(player.get_multiplayer_authority(), "request_damage", name.to_int())      
 			killed_someone = true
 			break 
 			
 	if not killed_someone:
 		print("Failed: No one close enough")
 
-# This function runs on EVERYONE'S computer to update the victim
+# --- DAMAGE & HEALTH SYNC ---
+
+# 1. Called by the Attacker (or anyone) -> Runs on the Victim (Authority)
 @rpc("any_peer", "call_local")
-func take_damage(killer_id: int):
+func request_damage(attacker_id: int):
+	# Only the owner of this player node handles the damage logic
+	if not is_multiplayer_authority():
+		return
+		
 	lives -= 1
-	print(name, " took damage! Lives remaining: ", lives)
+	print(name, " (Auth) processed damage. Lives: ", lives)
+	
+	# Broadcast the new state to everyone (including self)
+	rpc("sync_lives", lives, attacker_id)
+
+# 2. Called by the Victim (Authority) -> Runs on Everyone
+@rpc("authority", "call_local")
+func sync_lives(new_lives: int, killer_id: int):
+	lives = new_lives
 	update_lives_ui()
+	
+	print(name, " updated lives to: ", lives)
 
 	if lives > 0:
 		# --- RESPAWN LOGIC ---
@@ -155,9 +171,14 @@ func take_damage(killer_id: int):
 		remove_from_group("players")
 		
 		# 3. Award the kill to the killer
-		# We use rpc_id to send the message specifically to the killer
-		if killer_id != 0:
-			rpc_id(killer_id, "add_kill")
+		# We need to tell the killer to update their score.
+		# logic: If I am the killer, I find my own player node and tell it to add a kill.
+		if multiplayer.get_unique_id() == killer_id:
+			var players = get_tree().get_nodes_in_group("players")
+			for p in players:
+				if p.name.to_int() == killer_id:
+					p.rpc("add_kill")
+					break
 
 		# Drop crown logic (Placeholder for next step)
 		if has_crown:
