@@ -134,12 +134,14 @@ func attempt_kill():
 # 1. Called by the Attacker (or anyone) -> Runs on the Victim (Authority)
 @rpc("any_peer", "call_local")
 func request_damage(attacker_id: int):
+	print("DEBUG: request_damage called on ", name, " (Authority: ", is_multiplayer_authority(), ")")
 	# Only the owner of this player node handles the damage logic
 	if not is_multiplayer_authority():
+		print("DEBUG: Ignored request_damage (Not Authority)")
 		return
 		
 	lives -= 1
-	print(name, " (Auth) processed damage. Lives: ", lives)
+	print("DEBUG: ", name, " (Auth) processed damage. Decremented lives to: ", lives)
 	
 	# Broadcast the new state to everyone (including self)
 	rpc("sync_lives", lives, attacker_id)
@@ -147,6 +149,7 @@ func request_damage(attacker_id: int):
 # 2. Called by the Victim (Authority) -> Runs on Everyone
 @rpc("authority", "call_local")
 func sync_lives(new_lives: int, killer_id: int):
+	print("DEBUG: sync_lives called on ", name, ". New lives: ", new_lives, " (Local Old Lives: ", lives, ")")
 	lives = new_lives
 	update_lives_ui()
 	
