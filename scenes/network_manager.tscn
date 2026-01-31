@@ -7,8 +7,26 @@
 [node name="NetworkManager" type="Node2D" unique_id=868023284]
 script = ExtResource("1_cemok")
 
-[node name="ReferencePoint" type="Sprite2D" parent="."]
+[node name="Environment" type="Node2D" parent="."]
+
+[node name="Ref1" type="Sprite2D" parent="Environment"]
+modulate = Color(0.2, 0.2, 0.2, 1)
 position = Vector2(200, 200)
+texture = ExtResource("1_icon")
+
+[node name="Ref2" type="Sprite2D" parent="Environment"]
+modulate = Color(0.2, 0.2, 0.2, 1)
+position = Vector2(-200, 200)
+texture = ExtResource("1_icon")
+
+[node name="Ref3" type="Sprite2D" parent="Environment"]
+modulate = Color(0.2, 0.2, 0.2, 1)
+position = Vector2(200, -200)
+texture = ExtResource("1_icon")
+
+[node name="Ref4" type="Sprite2D" parent="Environment"]
+modulate = Color(0.2, 0.2, 0.2, 1)
+position = Vector2(-200, -200)
 texture = ExtResource("1_icon")
 
 [node name="Player" parent="." unique_id=1053508573 instance=ExtResource("2_bgv50")]
