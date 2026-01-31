@@ -39,8 +39,6 @@ func _ready():
 # --- MOVEMENT LOOP ---
 func _physics_process(delta):
 	
-	print("I am running!")
-	
 	# CRITICAL: If this player node does not belong to me, STOP.
 	if not is_multiplayer_authority():
 		return
