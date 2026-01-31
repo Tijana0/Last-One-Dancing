@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 NetworkManager="*uid://uudgqu40wu"
 
+[display]
+
+window/stretch/mode="canvas_items"
+
 [input]
 
 ui_left={

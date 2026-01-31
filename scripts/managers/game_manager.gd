@@ -1,6 +1,14 @@
 extends Node
 
+# --- CONFIGURATION ---
 const KILLS_TO_WIN = 3
+const SPAWN_RANGE_X = 400.0
+const SPAWN_RANGE_Y = 300.0
+
+# NPC Settings
+const NPC_SCENE = preload("res://prefabs/npc.tscn") # Loads the dummy file
+const NPC_COUNT = 30  # How many clones to spawn
+
 var crown_holder_id = -1
 
 func _ready():
@@ -10,9 +18,33 @@ func _ready():
 	if not multiplayer.is_server():
 		return
 	
-	# Spawn crown after players are spawned
+	# 1. Spawn NPCs immediately
+	spawn_npcs()
+	
+	# 2. Spawn crown after players are spawned (2 second delay)
 	await get_tree().create_timer(2.0).timeout
 	spawn_crown()
+
+func spawn_npcs():
+	if not multiplayer.is_server():
+		return
+
+	print("Spawning ", NPC_COUNT, " NPCs...")
+	
+	for i in range(NPC_COUNT):
+		var npc = NPC_SCENE.instantiate()
+		
+		# --- NEW: GIVE IT A SPECIFIC NAME ---
+		# This prevents the "Node not found" error by ensuring 
+		# both Server and Client use the exact same ID.
+		npc.name = "NPC_" + str(i)
+		
+		# Randomize position
+		var random_x = randf_range(-SPAWN_RANGE_X, SPAWN_RANGE_X)
+		var random_y = randf_range(-SPAWN_RANGE_Y, SPAWN_RANGE_Y)
+		npc.position = Vector2(random_x, random_y)
+		
+		get_parent().call_deferred("add_child", npc)
 
 func spawn_crown():
 	if not multiplayer.is_server():
@@ -37,7 +69,12 @@ func check_win_condition(player_id: int, kills: int):
 
 @rpc("any_peer", "call_local")
 func announce_winner(player_id: int):
-	var network_manager = get_node("/root/NetworkManager")
-	var player_name = network_manager.players.get(player_id, "Unknown")
+	var player_name = "Unknown"
+	
+	# Safely check for NetworkManager before accessing it
+	if has_node("/root/NetworkManager"):
+		var network_manager = get_node("/root/NetworkManager")
+		player_name = network_manager.players.get(player_id, "Unknown")
+	
 	print(player_name, " WINS!")
 	# TODO: Person 5 will show UI here
