@@ -67,6 +67,10 @@ func _physics_process(delta):
 	# CRITICAL: If this player node does not belong to me, STOP.
 	if not is_multiplayer_authority():
 		return
+		
+	# NPCs should not be controlled by player input
+	if is_npc:
+		return
 	
 	# Movement Logic
 	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
