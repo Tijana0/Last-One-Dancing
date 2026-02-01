@@ -16,7 +16,7 @@ func _ready():
 		main_menu_button.pressed.connect(_on_main_menu)
 
 func _on_play_again():
-	get_tree().change_scene_to_file("res://scenes/lobby.tscn")
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 func _on_main_menu():
-	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+	get_tree().quit()
