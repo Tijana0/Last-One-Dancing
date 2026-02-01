@@ -355,6 +355,11 @@ func become_crown_pickup():
 func pickup_item(item):
 	print("Picked up item type: ", item.type)
 	
+	# POTION (Type 0) restriction: Only pick up if injured
+	if item.type == 0 and lives >= 3:
+		print("Already at full health! Potion left on ground.")
+		return
+
 	if inventory.size() < 3:
 		inventory.append(item.type)
 		update_inventory_ui()
