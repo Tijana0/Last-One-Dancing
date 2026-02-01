@@ -153,30 +153,32 @@ func spawn_crown_npc():
 func trigger_victory(winner_id: int):
 	print("VICTORY! Winner ID: ", winner_id)
 	
-	var winner_name = "Player " + str(winner_id)
-	if has_node("/root/NetworkManager"):
-		var net_man = get_node("/root/NetworkManager")
-		winner_name = net_man.players.get(winner_id, winner_name)
+	if multiplayer.get_unique_id() == winner_id:
+		show_win_screen()
+	else:
+		# For losers who are still watching (or dead), maybe show main menu button?
+		pass
+
+func show_win_screen():
+	await get_tree().create_timer(1.0).timeout
 	
-	var players = get_tree().get_nodes_in_group("players")
-	for p in players:
-		# We only want to update the UI for the LOCAL player (the one playing on this computer)
-		if p.is_multiplayer_authority() and not p.get("is_npc"):
-			if p.has_node("GameOverLayer"):
-				var ui = p.get_node("GameOverLayer")
-				var label = ui.get_node("Label")
-				var bg = ui.get_node("Background")
+	var win_scene = load("res://scenes/win_screen.tscn")
+	if win_scene:
+		var win_screen = win_scene.instantiate()
+		
+		# Find local player to get stats
+		var players = get_tree().get_nodes_in_group("players")
+		for player in players:
+			if player.is_multiplayer_authority():
+				win_screen.player_kills = player.kill_count
+				# win_screen.player_dances = 0 
+				win_screen.player_lives = player.lives
 				
-				ui.visible = true
-				
-				if p.name.to_int() == winner_id:
-					# I WON!
-					label.text = "VICTORY!"
-					bg.color = Color(0, 0.5, 0, 0.8) # Green
-				else:
-					# SOMEONE ELSE WON
-					label.text = str(winner_name) + " WINS!"
-					bg.color = Color(0.5, 0, 0, 0.8) # Red
+				# Hide HUD
+				if player.hud: player.hud.visible = false
+				break
+		
+		get_tree().root.add_child(win_screen)
 
 @rpc("any_peer", "call_local")
 func check_win_condition(player_id: int, kills: int):
