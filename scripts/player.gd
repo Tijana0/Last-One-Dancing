@@ -30,6 +30,7 @@ const TEX_POTION = preload("res://assets/Potion.PNG")
 const TEX_GUN = preload("res://assets/gun.PNG")
 const TEX_MASK = preload("res://assets/gold_mask.png")
 
+
 # --- REFERENCES ---
 @onready var animated_sprite = $AnimatedSprite 
 @onready var hud = $HUD
