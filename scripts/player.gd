@@ -377,27 +377,30 @@ func pickup_item(item):
 	
 	# TYPE 0: POTION (Extra Life)
 	if item.type == 0:
+		# STRICT CHECK: Can only pick up if injured
+		if lives >= 3:
+			print("Lives full! Potion left on ground.")
+			return
+			
 		# 1. Instant Heal Effect
-		if lives < 3:
-			lives += 1
-			update_lives_ui()
-			print("Instant Heal! Lives: ", lives)
-			rpc("sync_lives", lives, 0)
-		else:
-			print("Lives full, but picking up for inventory.")
+		lives += 1
+		update_lives_ui()
+		print("Instant Heal! Lives: ", lives)
+		rpc("sync_lives", lives, 0)
 			
 		# 2. Add to Inventory (Reserve)
 		if inventory.size() < 3:
 			inventory.append(item.type)
 			update_inventory_ui()
 		else:
-			# If inventory full, we still consumed the instant heal part?
-			# Logic: If healed, we should probably destroy the item on ground.
-			# If NOT healed (full) AND inventory full, then leave it.
-			if lives >= 3: # Was full before heal check? No, lives is current.
-				# If we are now full (3), and inventory full, we effectively used it (if we healed) or wasted it.
-				# But let's assume if inventory full, we can't carry the "reserve".
-				pass
+			# If inventory full, we still healed?
+			# If we return here, we don't destroy the item?
+			# If we healed, we used the "essence" of the potion.
+			# Should we destroy it even if inventory full?
+			# User asked "displayed there". If not displayed, maybe we shouldn't consume it?
+			# But we healed.
+			# Let's assume if inventory full, we take the heal and destroy the item, but don't get the reserve.
+			print("Inventory full! Healed but no reserve stored.")
 	else:
 		# TYPE 1 (GUN) or TYPE 2 (MASK) -> Add to inventory
 		if inventory.size() < 3:
