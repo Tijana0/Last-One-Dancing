@@ -22,6 +22,8 @@ var kill_count = 0
 var has_crown = false
 var is_npc = false
 var inventory = []
+# NEW: Variable to store current mask type (0 = None/Default)
+var current_mask_type = 0 
 
 # Preload textures for UI
 const TEX_POTION = preload("res://assets/Potion.PNG")
@@ -32,6 +34,8 @@ const TEX_MASK = preload("res://assets/gold_mask.png")
 @onready var animated_sprite = $AnimatedSprite 
 @onready var hud = $HUD
 @onready var lives_container = $HUD/LivesContainer
+# NEW: Reference to your new Mask UI
+@onready var mask_display = $HUD/MaskDisplay 
 @onready var game_over_layer = $GameOverLayer
 @onready var inventory_container = $HUD/InventoryContainer
 @onready var dance_indicator = $DanceIndicator
@@ -62,6 +66,8 @@ func _ready():
 			hud.visible = false
 	
 	update_lives_ui()
+	# NEW: Initialize the mask UI
+	update_mask_ui() 
 	
 	if dance_indicator:
 		dance_indicator.visible = false
@@ -82,6 +88,18 @@ func update_lives_ui():
 		var hearts = lives_container.get_children()
 		for i in range(hearts.size()):
 			hearts[i].visible = i < lives
+
+# NEW: Function to handle Mask UI updates
+func update_mask_ui():
+	if not mask_display: return
+	
+	# Placeholder logic: You can change the color/texture based on 'current_mask_type'
+	var icon = mask_display.get_node_or_null("ColorRect") # Or TextureRect
+	if icon:
+		if current_mask_type == 0:
+			icon.color = Color.PURPLE # Placeholder color
+		else:
+			icon.color = Color.RED # Different mask
 
 # --- MOVEMENT LOOP ---
 func _physics_process(delta):
@@ -147,9 +165,6 @@ func sync_transform(pos: Vector2):
 # --- INTERACT SYSTEM (Space) ---
 func attempt_interact():
 	print("--- ATTEMPTING INTERACT ---")
-	
-	if Input.is_action_just_pressed("ui_accept") or true:
-		pass
 	
 	# 1. Crown (Priority)
 	var pickups = get_tree().get_nodes_in_group("crown_pickups")
@@ -277,7 +292,7 @@ func attempt_kill():
 		if distance < kill_range:
 			print("!!! HIT CONFIRMED on ", target.name, " !!!")
 			# Pass calculated damage
-			target.rpc_id(target.get_multiplayer_authority(), "request_damage", name.to_int(), damage)      
+			target.rpc_id(target.get_multiplayer_authority(), "request_damage", name.to_int(), damage)   
 			return
 			
 	print("Failed: No one close enough")
