@@ -1,15 +1,32 @@
 extends Control
 
-# This script handles moving from the menu to the lobby
+@onready var play_button = $CenterContainer/VBoxContainer/PlayButton
+@onready var quit_button = $CenterContainer/VBoxContainer/QuitButton
+@onready var title_label = $CenterContainer/VBoxContainer/Label
+
 func _ready():
-	# Signal connections link the buttons to the code below
-	$CenterContainer/VBoxContainer/PlayButton.pressed.connect(_on_play_pressed)
-	$CenterContainer/VBoxContainer/QuitButton.pressed.connect(_on_quit_pressed)
+	# Set your custom title
+	if title_label:
+		title_label.text = "Last One Dancing"
+	
+	# Rename buttons to match your design
+	if play_button:
+		play_button.text = "Enter Ballroom"
+	
+	if quit_button:
+		quit_button.text = "Leave"
+	
+	# Connect button signals
+	play_button.pressed.connect(_on_play_pressed)
+	quit_button.pressed.connect(_on_quit_pressed)
 
 func _on_play_pressed():
-	# This switches the entire scene to the lobby you are building
+	# Fade out animation (optional)
+	var tween = create_tween()
+	tween.tween_property(self, "modulate:a", 0.0, 0.3)
+	await tween.finished
+	
 	get_tree().change_scene_to_file("res://scenes/lobby.tscn")
 
 func _on_quit_pressed():
-	# Closes the game application
 	get_tree().quit()

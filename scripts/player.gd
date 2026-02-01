@@ -340,8 +340,9 @@ func sync_lives(new_lives: int, killer_id: int):
 		$CollisionShape2D.set_deferred("disabled", true)
 		set_physics_process(false)
 		
-		if is_multiplayer_authority() and game_over_layer and not is_npc:
-			game_over_layer.visible = true
+		# SHOW LOSE SCREEN instead of game_over_layer
+		if is_multiplayer_authority() and not is_npc:
+			show_lose_screen(killer_id)
 		
 		remove_from_group("players")
 		
@@ -354,6 +355,32 @@ func sync_lives(new_lives: int, killer_id: int):
 			# A regular player died. Check if it's time to spawn the Boss.
 			if game_manager and multiplayer.is_server():
 				game_manager.check_survivors()
+
+func show_lose_screen(killer_id: int):
+	# Find killer name
+	var killer_name = "Unknown"
+	if has_node("/root/NetworkManager"):
+		var network_manager = get_node("/root/NetworkManager")
+		if network_manager.players.has(killer_id):
+			killer_name = network_manager.players[killer_id]
+	
+	# Wait before showing screen
+	await get_tree().create_timer(2.0).timeout
+	
+	var lose_scene = load("res://scenes/lose_screen.tscn")
+	if lose_scene:
+		var lose_screen = lose_scene.instantiate()
+		
+		# Pass stats
+		lose_screen.player_kills = kill_count
+		# lose_screen.player_dances = 0 # Need to track dances if we want this stat
+		lose_screen.killer_name = killer_name
+		
+		# Add to root (covering everything)
+		get_tree().root.add_child(lose_screen)
+		
+		# Hide HUD
+		if hud: hud.visible = false
 
 func become_crown_pickup():
 	print("Crown dropped at ", global_position)
