@@ -50,18 +50,32 @@ func spawn_single_npc(pos: Vector2, npc_name: String):
 
 func spawn_scattered_items():
 	print("Spawning scattered items...")
+	
+	# Create a list of types to ensure one of each
+	var types = [0, 1, 2] # POTION, GUN, MASK
+	types.shuffle()
+	
 	for i in range(PICKUP_COUNT):
 		var item_name = "Pickup_" + str(i)
 		var pos = Vector2(randf_range(-400, 400), randf_range(-300, 300))
 		
+		# Cycle through types if count > 3 (using modulus)
+		var type = types[i % types.size()]
+		
 		# Call RPC to spawn on all clients (including server)
-		spawn_item.rpc(pos, item_name)
+		spawn_item.rpc(pos, item_name, type)
 
 @rpc("authority", "call_local")
-func spawn_item(pos: Vector2, item_name: String):
+func spawn_item(pos: Vector2, item_name: String, item_type: int):
 	var item = PICKUP_SCENE.instantiate()
 	item.name = item_name
 	item.position = pos
+	
+	# Set type BEFORE adding to tree so _ready logic works if needed, 
+	# but we removed randomization from _ready so we just set it here.
+	item.type = item_type
+	item.update_visuals() # Force visual update
+	
 	get_parent().call_deferred("add_child", item)
 
 @rpc("any_peer", "call_local")
