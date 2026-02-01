@@ -389,16 +389,19 @@ func update_inventory_ui():
 			var shape = Polygon2D.new()
 			shape.color = Color.WHITE
 			
-			if type == 0: # TRIANGLE
-				shape.polygon = PackedVector2Array([Vector2(0, -10), Vector2(10, 10), Vector2(-10, 10)])
-			elif type == 1: # CIRCLE
+			if type == 0: # POTION -> CIRCLE
 				var circle_points = []
 				for d in range(12):
 					var angle = deg_to_rad(d * 30)
 					circle_points.append(Vector2(cos(angle)*10, sin(angle)*10))
 				shape.polygon = PackedVector2Array(circle_points)
-			elif type == 2: # SQUARE
-				shape.polygon = PackedVector2Array([Vector2(-10, -10), Vector2(10, -10), Vector2(10, 10), Vector2(-10, 10)])
+				shape.color = Color.GREEN # Optional: Color code inventory too?
+			elif type == 1: # GUN -> RECTANGLE
+				shape.polygon = PackedVector2Array([Vector2(-15, -10), Vector2(15, -10), Vector2(15, 10), Vector2(-15, 10)])
+				shape.color = Color.GRAY
+			elif type == 2: # MASK -> TRIANGLE
+				shape.polygon = PackedVector2Array([Vector2(0, -15), Vector2(15, 10), Vector2(-15, 10)])
+				shape.color = Color.GOLD
 			
 			icon_node.add_child(shape)
 
