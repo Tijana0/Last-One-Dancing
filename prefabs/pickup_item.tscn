@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://pickup12345"]
+[gd_scene load_steps=3 format=3 uid="uid://pickup12345"]
 
 [ext_resource type="Script" path="res://scripts/pickup_item.gd" id="1_script"]
 
@@ -7,6 +7,9 @@ radius = 20.0
 
 [node name="PickupItem" type="Area2D"]
 script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.15, 0.15)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_pickup")
