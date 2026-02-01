@@ -355,40 +355,33 @@ func become_crown_pickup():
 func pickup_item(item):
 	print("Picked up item type: ", item.type)
 	
-	# POTION (Type 0) restriction: Only pick up if injured
-	if item.type == 0 and lives >= 3:
-		print("Already at full health! Potion left on ground.")
-		return
-
-	if inventory.size() < 3:
-		inventory.append(item.type)
-		update_inventory_ui()
+	# TYPE 0: POTION (Extra Life)
+	if item.type == 0:
+		if lives < 3:
+			lives += 1
+			update_lives_ui()
+			print("Used Potion! Lives: ", lives)
+			rpc("sync_lives", lives, 0)
+		else:
+			print("Lives full! Potion left on ground.")
+			return # Don't destroy item
 	else:
-		print("Inventory full! Item left on ground.")
-		return 
+		# TYPE 1 (GUN) or TYPE 2 (MASK) -> Add to inventory
+		if inventory.size() < 3:
+			inventory.append(item.type)
+			update_inventory_ui()
+		else:
+			print("Inventory full! Item left on ground.")
+			return
 	
-	# Destroy item globally (only if we actually picked it up)
+	# Destroy item globally
 	var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
 	if game_manager:
 		game_manager.rpc("destroy_item", item.name)
 
 func use_potion():
-	# Find first potion (type 0) in inventory
-	var potion_index = inventory.find(0)
-	
-	if potion_index != -1:
-		if lives < 3:
-			print("Using Potion...")
-			lives += 1
-			inventory.remove_at(potion_index)
-			update_lives_ui()
-			update_inventory_ui()
-			# Sync life gain to others
-			rpc("sync_lives", lives, 0)
-		else:
-			print("Lives full! Can't use potion.")
-	else:
-		print("No potion in inventory.")
+	# Deprecated / Not used if potion is instant
+	pass
 
 func update_inventory_ui():
 	if not inventory_container: return
