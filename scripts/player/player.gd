@@ -3,135 +3,202 @@ extends CharacterBody2D
 # --- PROPERTIES ---
 @export var speed = 300.0
 
-# --- KILL SYSTEM PROPERTIES ---
-@export var kill_range = 100.0   # How close you must be to kill (pixels)
-@export var kill_cooldown = 1.0  # Seconds you must wait between kills
-var last_kill_time = 0.0         # Tracks when you last killed
+# --- KILL SYSTEM ---
+@export var kill_range = 100.0
+@export var kill_cooldown = 1.0
+var last_kill_time = 0.0
 
-# --- GAME LOGIC VARIABLES ---
+# --- DANCE SYSTEM ---
+var is_dancing = false
+var dance_partner = null
+var dance_center = Vector2.ZERO
+var dance_angle = 0.0
+var dance_speed = 2.0 
+var dance_radius = 80.0 
+
+# --- GAME LOGIC ---
 var player_name = "Player"
 var kill_count = 0
 var has_crown = false
 
 # --- REFERENCES ---
-# IMPORTANT: Make sure your Sprite node is named "Sprite2D" in the scene tree!
 @onready var sprite = $Sprite2D 
+@onready var camera = $Camera2D
 
-# --- SETUP ---
 func _enter_tree():
-	# This helps the MultiplayerSpawner find this node and assign authority
 	set_multiplayer_authority(name.to_int())
 
 func _ready():
-	# Give every player a random color so we can tell them apart for now
 	if sprite:
 		sprite.modulate = Color(randf(), randf(), randf())
 	
-	# CRITICAL: Add to group so players can find each other for killing
 	add_to_group("players")
 	
-	# Only enable a camera for the local player
+	# --- CAMERA SETUP ---
 	if is_multiplayer_authority():
-		var camera = Camera2D.new()
-		add_child(camera)
-		camera.enabled = true
+		if camera:
+			camera.enabled = true
+			camera.make_current()
+	else:
+		if camera:
+			camera.enabled = false
 
-# --- MOVEMENT LOOP ---
 func _physics_process(delta):
-	
-	print("I am running!")
-	
-	# CRITICAL: If this player node does not belong to me, STOP.
+	# Only run logic for the local player
 	if not is_multiplayer_authority():
 		return
 	
-	# Movement Logic
+	# --- STATE MACHINE (Movement Lock) ---
+	# If dancing, we ONLY orbit. If not, we use WASD.
+	if is_dancing:
+		process_dance_movement(delta)
+	else:
+		process_standard_movement(delta)
+
+	# --- INPUTS ---
+	if Input.is_physical_key_pressed(KEY_K):
+		attempt_kill()
+
+	# Interact (F)
+	if Input.is_action_just_pressed("interact") or Input.is_physical_key_pressed(KEY_F):
+		if is_dancing:
+			stop_dancing()
+		else:
+			attempt_dance_initiation()
+
+# --- MOVEMENT FUNCTIONS ---
+
+func process_standard_movement(delta):
 	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	velocity = direction * speed
 	move_and_slide()
-	
-	# --- DEBUG TEST: BYPASS INPUT MAP ---
-	# We use is_physical_key_pressed to ignore the Input Map entirely
-	if Input.is_physical_key_pressed(KEY_K):
-		# We use 'just_pressed' logic manually to stop it from spamming
-		if not Input.is_action_just_pressed("kill"): # Just a check to see if map is working
-			print("Raw 'K' key detected, but Input Map 'kill' did NOT trigger!")
+
+func process_dance_movement(delta):
+	# Safety Check: If partner disappears, stop dancing
+	if dance_partner == null or not is_instance_valid(dance_partner):
+		stop_dancing()
+		return
 		
-		attempt_kill()
+	# 1. Update Angle
+	dance_angle += dance_speed * delta
+	
+	# 2. Calculate Target Position
+	var offset = Vector2(cos(dance_angle), sin(dance_angle)) * dance_radius
+	var target_pos = dance_center + offset
+	
+	# 3. PHYSICS MOVE (Prevents overlapping)
+	var desired_velocity = (target_pos - global_position) / delta
+	velocity = desired_velocity
+	move_and_slide()
 
 # --- NETWORK SYNC ---
 func _process(delta):
 	if is_multiplayer_authority():
-		# If I am me, send my position to the server/others
 		rpc("sync_transform", position, rotation)
 
 @rpc("any_peer", "unreliable")
 func sync_transform(pos: Vector2, rot: float):
-	# If I am NOT the authority (meaning this is someone else's player),
-	# update their position on my screen.
 	if not is_multiplayer_authority():
 		position = pos
 		rotation = rot
 
-# --- KILL SYSTEM FUNCTIONS ---
+# --- DANCE LOGIC ---
 
+func attempt_dance_initiation():
+	print("Looking for dance partner...")
+	var npcs = get_tree().get_nodes_in_group("npcs")
+	
+	var closest_npc = null
+	var closest_dist = 150.0 
+	
+	for npc in npcs:
+		var dist = global_position.distance_to(npc.global_position)
+		if dist < closest_dist:
+			closest_dist = dist
+			closest_npc = npc
+	
+	if closest_npc:
+		print("Found partner: ", closest_npc.name)
+		rpc_id(1, "request_dance_server", closest_npc.get_path())
+
+func stop_dancing():
+	# 1. Stop locally
+	is_dancing = false
+	dance_partner = null
+	
+	# 2. Tell the Server to stop the NPC too
+	rpc_id(1, "request_stop_dance_server")
+
+@rpc("any_peer", "call_local")
+func request_dance_server(npc_path):
+	if not multiplayer.is_server():
+		return
+		
+	var npc = get_node(npc_path)
+	var player = self 
+	
+	if npc:
+		var center = (player.global_position + npc.global_position) / 2.0
+		
+		# Start the NPC
+		npc.start_dancing(center, PI, player)
+		
+		# Start the Player (via RPC)
+		player.rpc("start_dancing_client", center, 0.0, npc_path)
+		
+		# Server remembers the link
+		player.dance_partner = npc
+		player.is_dancing = true
+
+@rpc("any_peer", "call_local")
+func request_stop_dance_server():
+	if not multiplayer.is_server():
+		return
+		
+	# Check if we were dancing with someone
+	if is_instance_valid(dance_partner):
+		# Tell the NPC to stop
+		if dance_partner.has_method("stop_dancing"):
+			dance_partner.stop_dancing()
+			
+	# Reset server-side variables for this player
+	dance_partner = null
+	is_dancing = false
+
+@rpc("call_local")
+func start_dancing_client(center: Vector2, angle: float, partner_path: String):
+	var partner_node = get_node(partner_path)
+	is_dancing = true
+	dance_center = center
+	dance_angle = angle
+	dance_partner = partner_node
+
+# --- KILL LOGIC ---
 func attempt_kill():
-	print("--- ATTEMPTING KILL ---") # 1. Confirm Input works
-	
-	# Check Cooldown
 	var current_time = Time.get_ticks_msec() / 1000.0
-	if current_time - last_kill_time < kill_cooldown:
-		print("Failed: Cooldown active")
-		return 
-	
+	if current_time - last_kill_time < kill_cooldown: return 
 	last_kill_time = current_time
 	
-	# Find players
 	var players = get_tree().get_nodes_in_group("players")
-	print("Found ", players.size(), " players in group.") # 2. Confirm Group works
-	
-	var killed_someone = false
-	
 	for player in players:
-		# Skip self
-		if player == self:
-			continue 
-			
-		# Check distance
-		var distance = global_position.distance_to(player.global_position)
-		print("Checking target: ", player.name, " | Distance: ", distance) # 3. Confirm Distance
-		
-		# TEMPORARY: Increased range for testing
-		if distance < 300.0: # Increased from 100 to 300 to make testing easier
-			print("!!! KILL CONFIRMED on ", player.name, " !!!")
+		if player == self: continue 
+		if global_position.distance_to(player.global_position) < kill_range:
 			player.rpc("die")      
 			rpc("add_kill")        
-			killed_someone = true
 			break 
-			
-	if not killed_someone:
-		print("Failed: No one close enough")
 
-# This function runs on EVERYONE'S computer to update the victim
 @rpc("any_peer", "call_local")
 func die():
-	print(name, " died!")
+	# Force stop dancing if you die
+	is_dancing = false
 	
-	# Respawn at random location (Adjust 800/600 to your window size)
-	global_position = Vector2(randf_range(0, 800), randf_range(0, 600))
+	# Respawn anywhere in the large map
+	var spawn_x = randf_range(-1000, 1000)
+	var spawn_y = randf_range(-800, 800)
+	global_position = Vector2(spawn_x, spawn_y)
 	
-	# Visual Feedback (Flash transparent)
-	if sprite:
-		sprite.modulate.a = 0.3
-		await get_tree().create_timer(1.0).timeout
-		sprite.modulate.a = 1.0
-	
-	# Drop crown logic (Placeholder for next step)
-	if has_crown:
-		has_crown = false
+	if has_crown: has_crown = false
 
-# This function updates the killer's score
 @rpc("any_peer", "call_local")
 func add_kill():
 	kill_count += 1
-	print("My Kill Count: ", kill_count)

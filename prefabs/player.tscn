@@ -1,9 +1,10 @@
-[gd_scene load_steps=4 format=3 uid="uid://c6bjpr7x3e3cd"]
+[gd_scene format=3 uid="uid://c6bjpr7x3e3cd"]
 
-[ext_resource type="Texture2D" uid="uid://b0p1q2r3s4t5" path="res://icon.svg" id="1_icon"]
-[ext_resource type="Script" path="res://scripts/player/player.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://si5mmnxoe7lj" path="res://icon.svg" id="1_icon"]
+[ext_resource type="Script" uid="uid://dak42xmawo10i" path="res://scripts/player/player.gd" id="1_script"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_bgv50"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4dohe"]
+size = Vector2(128.75, 129)
 
 [node name="Player" type="CharacterBody2D" unique_id=1053508573]
 script = ExtResource("1_script")
@@ -12,9 +13,14 @@ script = ExtResource("1_script")
 texture = ExtResource("1_icon")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=148613396]
-shape = SubResource("CircleShape2D_bgv50")
+position = Vector2(-0.625, 0.5)
+shape = SubResource("RectangleShape2D_4dohe")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1512662087]
+limit_left = -1250
+limit_top = -1000
+limit_right = 1250
+limit_bottom = 1000
 
 [node name="NameLabel" type="Label" parent="." unique_id=2099227980]
 offset_right = 40.0

@@ -1,70 +1,67 @@
 extends CharacterBody2D
 
-# --- SETTINGS ---
-@export var move_speed = 100.0      # Slower than players (makes them easier to spot if observing closely)
-@export var wander_time = 2.0       # How long to walk before stopping
-@export var dance_time = 3.0        # How long to stop (dance) before walking
-
-# --- STATE ---
-var move_direction = Vector2.ZERO
-var time_until_change = 0.0
+# --- STATE VARIABLES ---
 var is_dancing = false
+var dance_partner = null
+var dance_center = Vector2.ZERO
+var dance_angle = 0.0
+var dance_speed = 2.0   
+var dance_radius = 80.0 # Increased for spacing
 
-# @onready var sprite = $Sprite2D
-@onready var sprite = $Body
-
+# --- SETUP ---
 func _ready():
-	# Visuals: Random color (Must match player logic eventually)
-	sprite.modulate = Color(randf(), randf(), randf())
-	
-	# Add to a group so we can tell them apart in code (even if players can't tell visually)
 	add_to_group("npcs")
 	
-	# Start with a random timer so they don't all move at the exact same time
-	time_until_change = randf_range(0, wander_time)
+	var sprite = get_node_or_null("Sprite2D")
+	if sprite:
+		sprite.modulate = Color(randf(), randf(), randf())
 
+# --- MOVEMENT LOOP (Server Only) ---
 func _physics_process(delta):
-	# CRITICAL: Only the Server thinks for NPCs. 
-	# Clients just watch what the server tells them.
 	if not multiplayer.is_server():
 		return
 
-	# Timer Logic
-	time_until_change -= delta
-	if time_until_change <= 0:
-		decide_next_move()
-	
-	# Apply Movement
-	if not is_dancing:
-		velocity = move_direction * move_speed
-		move_and_slide()
-	else:
-		# If dancing, stand still (Velocity 0)
-		velocity = Vector2.ZERO
-
-# --- AI LOGIC (Server Only) ---
-func decide_next_move():
-	# Toggle between Moving and Dancing
-	is_dancing = !is_dancing
-	
 	if is_dancing:
-		# State: DANCE (Stop moving)
-		time_until_change = randf_range(2.0, dance_time)
-		move_direction = Vector2.ZERO
-	else:
-		# State: WANDER (Pick a random direction)
-		time_until_change = randf_range(1.0, wander_time)
-		# Pick a random angle
-		var angle = randf() * TAU # TAU is 2*PI (360 degrees)
-		move_direction = Vector2(cos(angle), sin(angle))
+		process_dance_movement(delta)
 
 # --- NETWORK SYNC ---
-# We need to send the Server's NPC position to all Clients
 func _process(delta):
 	if multiplayer.is_server():
-		rpc("sync_npc_transform", position)
+		rpc("sync_npc_transform", position, rotation)
 
-@rpc("authority", "unreliable") # "authority" means only server can call this
-func sync_npc_transform(pos: Vector2):
-	# Clients update their NPC position to match the server
+@rpc("authority", "call_remote", "unreliable")
+func sync_npc_transform(pos: Vector2, rot: float):
 	position = pos
+	rotation = rot
+
+# --- DANCE LOGIC ---
+func start_dancing(center: Vector2, start_angle: float, partner_node):
+	is_dancing = true
+	dance_center = center
+	dance_angle = start_angle
+	dance_partner = partner_node
+	
+	# Disable collision with partner to prevent jitter
+	if partner_node and partner_node is CollisionObject2D:
+		add_collision_exception_with(partner_node)
+
+func stop_dancing():
+	is_dancing = false
+	dance_partner = null
+
+func process_dance_movement(delta):
+	if not is_instance_valid(dance_partner):
+		stop_dancing()
+		return
+		
+	# 1. Update Angle
+	dance_angle += dance_speed * delta
+	
+	# 2. Calculate Target
+	var offset = Vector2(cos(dance_angle), sin(dance_angle)) * dance_radius
+	var target_pos = dance_center + offset
+	
+	# 3. PHYSICS MOVE
+	var desired_velocity = (target_pos - global_position) / delta
+	velocity = desired_velocity
+	move_and_slide()

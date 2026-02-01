@@ -3,7 +3,8 @@
 [ext_resource type="Script" uid="uid://bvtgbppdpf40a" path="res://scripts/npc.gd" id="1_1ov3m"]
 [ext_resource type="Texture2D" uid="uid://si5mmnxoe7lj" path="res://icon.svg" id="2_cuwdc"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_bgv50"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1ov3m"]
+size = Vector2(129, 130)
 
 [node name="NPC" type="CharacterBody2D" unique_id=1053508573]
 script = ExtResource("1_1ov3m")
@@ -12,4 +13,5 @@ script = ExtResource("1_1ov3m")
 texture = ExtResource("2_cuwdc")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=148613396]
-shape = SubResource("CircleShape2D_bgv50")
+position = Vector2(0.5, 0)
+shape = SubResource("RectangleShape2D_1ov3m")
