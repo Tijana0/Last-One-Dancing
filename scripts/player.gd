@@ -183,7 +183,7 @@ func attempt_dance():
 	
 	for target in targets:
 		if target == self:
-			continue
+			continue 
 		
 		var distance = global_position.distance_to(target.global_position)
 		print("Checking ", target.name, " | Distance: ", distance)
@@ -243,33 +243,46 @@ func attempt_kill():
 	
 	last_kill_time = current_time
 	
-	var players = get_tree().get_nodes_in_group("players")
-	print("Found ", players.size(), " players in group.")
+	# Check for Gun (Type 1)
+	var damage = 1
+	var gun_index = inventory.find(1)
+	if gun_index != -1:
+		damage = 2
+		print("USING GUN! Damage: 2")
+		inventory.remove_at(gun_index)
+		update_inventory_ui()
 	
-	for player in players:
-		if player == self:
+	var targets = []
+	targets.append_array(get_tree().get_nodes_in_group("players"))
+	targets.append_array(get_tree().get_nodes_in_group("npcs"))
+	
+	print("Found ", targets.size(), " potential kill targets")
+	
+	for target in targets:
+		if target == self:
 			continue 
 		
-		var distance = global_position.distance_to(player.global_position)
-		print("Checking target: ", player.name, " | Distance: ", distance)
+		var distance = global_position.distance_to(target.global_position)
+		print("Checking target: ", target.name, " | Distance: ", distance)
 		
 		if distance < kill_range:
-			print("!!! HIT CONFIRMED on ", player.name, " !!!")
-			player.rpc_id(player.get_multiplayer_authority(), "request_damage", name.to_int())      
+			print("!!! HIT CONFIRMED on ", target.name, " !!!")
+			# Pass calculated damage
+			target.rpc_id(target.get_multiplayer_authority(), "request_damage", name.to_int(), damage)      
 			return
 			
 	print("Failed: No one close enough")
 
 # --- DAMAGE & HEALTH SYNC ---
 @rpc("any_peer", "call_local")
-func request_damage(attacker_id: int):
+func request_damage(attacker_id: int, damage_amount: int = 1):
 	print("DEBUG: request_damage called on ", name)
 	
 	if not is_multiplayer_authority():
 		print("DEBUG: Ignored (Not Authority)")
 		return
 	
-	lives -= 1
+	lives -= damage_amount
 	print("DEBUG: ", name, " lives decreased to: ", lives)
 	
 	rpc("sync_lives", lives, attacker_id)
@@ -337,8 +350,22 @@ func become_crown_pickup():
 
 func pickup_item(item):
 	print("Picked up item type: ", item.type)
-	inventory.append(item.type)
-	update_inventory_ui()
+	
+	# TYPE 0: POTION (Extra Life)
+	if item.type == 0:
+		if lives < 3:
+			lives += 1
+			update_lives_ui()
+			print("Used Potion! Lives: ", lives)
+			# Sync life gain to others so they know
+			rpc("sync_lives", lives, 0)
+		else:
+			print("Lives full! Potion consumed.")
+	else:
+		# TYPE 1 (GUN) or TYPE 2 (MASK) -> Add to inventory
+		if inventory.size() < 3:
+			inventory.append(item.type)
+			update_inventory_ui()
 	
 	# Destroy item globally
 	var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
