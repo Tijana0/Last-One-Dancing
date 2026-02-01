@@ -5,7 +5,7 @@ var crown_holder_id = -1
 var crown_npc_spawned = false
 
 const PICKUP_SCENE = preload("res://prefabs/pickup_item.tscn")
-const PICKUP_COUNT = 10
+const PICKUP_COUNT = 3
 
 func _ready():
 	print("GameManager ready")
