@@ -370,7 +370,10 @@ func show_lose_screen(killer_id: int):
 func become_crown_pickup():
 	print("Crown dropped at ", global_position)
 	
-	# Hide player body
+	# Ensure parent is visible (it was hidden in sync_lives)
+	visible = true
+	
+	# Hide player body sprite
 	if animated_sprite:
 		animated_sprite.visible = false
 		
