@@ -385,11 +385,6 @@ func become_crown_pickup():
 	
 	add_to_group("crown_pickups")
 	$CollisionShape2D.set_deferred("disabled", true)
-	
-	var label = Label.new()
-	label.text = "PRESS SPACE"
-	label.position = Vector2(-50, -80)
-	add_child(label)
 
 # --- ITEM SYSTEM ---
 
