@@ -22,21 +22,17 @@ var kill_count = 0
 var has_crown = false
 var is_npc = false
 var inventory = []
-# NEW: Variable to store current mask type (0 = None/Default)
-var current_mask_type = 0 
 
 # Preload textures for UI
 const TEX_POTION = preload("res://assets/Potion.PNG")
 const TEX_GUN = preload("res://assets/gun.PNG")
 const TEX_MASK = preload("res://assets/gold_mask.png")
-
+const TEX_CROWN = preload("res://assets/crown.PNG")
 
 # --- REFERENCES ---
 @onready var animated_sprite = $AnimatedSprite 
 @onready var hud = $HUD
 @onready var lives_container = $HUD/LivesContainer
-# NEW: Reference to your new Mask UI
-@onready var mask_display = $HUD/MaskDisplay 
 @onready var game_over_layer = $GameOverLayer
 @onready var inventory_container = $HUD/InventoryContainer
 @onready var dance_indicator = $DanceIndicator
@@ -67,8 +63,6 @@ func _ready():
 			hud.visible = false
 	
 	update_lives_ui()
-	# NEW: Initialize the mask UI
-	update_mask_ui() 
 	
 	if dance_indicator:
 		dance_indicator.visible = false
@@ -89,18 +83,6 @@ func update_lives_ui():
 		var hearts = lives_container.get_children()
 		for i in range(hearts.size()):
 			hearts[i].visible = i < lives
-
-# NEW: Function to handle Mask UI updates
-func update_mask_ui():
-	if not mask_display: return
-	
-	# Placeholder logic: You can change the color/texture based on 'current_mask_type'
-	var icon = mask_display.get_node_or_null("ColorRect") # Or TextureRect
-	if icon:
-		if current_mask_type == 0:
-			icon.color = Color.PURPLE # Placeholder color
-		else:
-			icon.color = Color.RED # Different mask
 
 # --- MOVEMENT LOOP ---
 func _physics_process(delta):
@@ -143,7 +125,7 @@ func _physics_process(delta):
 	if Input.is_physical_key_pressed(KEY_SPACE):
 		attempt_interact()
 		
-	# E KEY: USE ITEM (Potion) - Deprecated for instant use but kept for future?
+	# E KEY: USE ITEM (Potion)
 	if Input.is_physical_key_pressed(KEY_E):
 		use_potion()
 
@@ -166,6 +148,9 @@ func sync_transform(pos: Vector2):
 # --- INTERACT SYSTEM (Space) ---
 func attempt_interact():
 	print("--- ATTEMPTING INTERACT ---")
+	
+	if Input.is_action_just_pressed("ui_accept") or true:
+		pass
 	
 	# 1. Crown (Priority)
 	var pickups = get_tree().get_nodes_in_group("crown_pickups")
@@ -293,7 +278,7 @@ func attempt_kill():
 		if distance < kill_range:
 			print("!!! HIT CONFIRMED on ", target.name, " !!!")
 			# Pass calculated damage
-			target.rpc_id(target.get_multiplayer_authority(), "request_damage", name.to_int(), damage)   
+			target.rpc_id(target.get_multiplayer_authority(), "request_damage", name.to_int(), damage)      
 			return
 			
 	print("Failed: No one close enough")
@@ -385,10 +370,15 @@ func show_lose_screen(killer_id: int):
 func become_crown_pickup():
 	print("Crown dropped at ", global_position)
 	
+	# Hide player body
 	if animated_sprite:
-		animated_sprite.play("idle")  # Stop animating
-		animated_sprite.modulate = Color(1, 0.8, 0)  # Gold
-		animated_sprite.scale = Vector2(0.5, 0.5)
+		animated_sprite.visible = false
+		
+	# Show Crown Sprite
+	var crown_sprite = Sprite2D.new()
+	crown_sprite.texture = TEX_CROWN
+	crown_sprite.scale = Vector2(0.3, 0.3) # Adjust scale
+	add_child(crown_sprite)
 	
 	add_to_group("crown_pickups")
 	$CollisionShape2D.set_deferred("disabled", true)
@@ -421,13 +411,6 @@ func pickup_item(item):
 			inventory.append(item.type)
 			update_inventory_ui()
 		else:
-			# If inventory full, we still healed?
-			# If we return here, we don't destroy the item?
-			# If we healed, we used the "essence" of the potion.
-			# Should we destroy it even if inventory full?
-			# User asked "displayed there". If not displayed, maybe we shouldn't consume it?
-			# But we healed.
-			# Let's assume if inventory full, we take the heal and destroy the item, but don't get the reserve.
 			print("Inventory full! Healed but no reserve stored.")
 	else:
 		# TYPE 1 (GUN) or TYPE 2 (MASK) -> Add to inventory
