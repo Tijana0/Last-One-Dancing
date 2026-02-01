@@ -1,14 +1,9 @@
 extends Control
 
-@onready var play_button = $CenterContainer/VBoxContainer/PlayButton
-@onready var quit_button = $CenterContainer/VBoxContainer/QuitButton
-@onready var title_label = $CenterContainer/VBoxContainer/Label
+@onready var play_button = $HBoxContainer/PlayButton
+@onready var quit_button = $HBoxContainer/QuitButton
 
 func _ready():
-	# Set your custom title
-	if title_label:
-		title_label.text = "Last One Dancing"
-	
 	# Rename buttons to match your design
 	if play_button:
 		play_button.text = "Enter Ballroom"
@@ -17,8 +12,10 @@ func _ready():
 		quit_button.text = "Leave"
 	
 	# Connect button signals
-	play_button.pressed.connect(_on_play_pressed)
-	quit_button.pressed.connect(_on_quit_pressed)
+	if play_button:
+		play_button.pressed.connect(_on_play_pressed)
+	if quit_button:
+		quit_button.pressed.connect(_on_quit_pressed)
 
 func _on_play_pressed():
 	# Fade out animation (optional)
