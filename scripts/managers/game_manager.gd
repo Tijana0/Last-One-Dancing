@@ -104,23 +104,30 @@ func spawn_crown_npc():
 func trigger_victory(winner_id: int):
 	print("VICTORY! Winner ID: ", winner_id)
 	
-	# Show victory screen for the winner
+	var winner_name = "Player " + str(winner_id)
+	if has_node("/root/NetworkManager"):
+		var net_man = get_node("/root/NetworkManager")
+		winner_name = net_man.players.get(winner_id, winner_name)
+	
 	var players = get_tree().get_nodes_in_group("players")
 	for p in players:
-		if p.name.to_int() == winner_id:
-			# Found the winner
+		# We only want to update the UI for the LOCAL player (the one playing on this computer)
+		if p.is_multiplayer_authority() and not p.get("is_npc"):
 			if p.has_node("GameOverLayer"):
 				var ui = p.get_node("GameOverLayer")
 				var label = ui.get_node("Label")
 				var bg = ui.get_node("Background")
 				
-				label.text = "VICTORY!"
-				bg.color = Color(0, 0.5, 0, 0.8) # Green background
 				ui.visible = true
 				
-	# Also announce it to everyone else?
-	# Maybe show "Player X Won" on others?
-	# For now, just showing local victory screen is enough per request.
+				if p.name.to_int() == winner_id:
+					# I WON!
+					label.text = "VICTORY!"
+					bg.color = Color(0, 0.5, 0, 0.8) # Green
+				else:
+					# SOMEONE ELSE WON
+					label.text = str(winner_name) + " WINS!"
+					bg.color = Color(0.5, 0, 0, 0.8) # Red
 
 @rpc("any_peer", "call_local")
 func check_win_condition(player_id: int, kills: int):
