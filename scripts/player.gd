@@ -78,8 +78,8 @@ func _physics_process(delta):
 	move_and_slide()
 	
 	# --- INTERACTION: PICKUP CROWN ---
-	if Input.is_physical_key_pressed(KEY_F):
-		if Input.is_action_just_pressed("interact") or true: # Hacky 'just pressed' check or rely on cooldown?
+	if Input.is_physical_key_pressed(KEY_SPACE):
+		if Input.is_action_just_pressed("ui_accept") or true: # Space is often ui_accept
 			# Simple cooldown to prevent spamming RPCs
 			pass
 			
@@ -91,7 +91,6 @@ func _physics_process(delta):
 				if game_manager:
 					# I am the winner!
 					game_manager.rpc("trigger_victory", name.to_int())
-					# Destroy the pickup locally/remotely? Victory screen covers it.
 				break
 	
 	# --- DEBUG TEST: BYPASS INPUT MAP ---
@@ -255,10 +254,10 @@ func become_crown_pickup():
 	# Disable physics completely
 	$CollisionShape2D.set_deferred("disabled", true)
 	
-	# Optional: Add a label saying "Press F"
+	# Optional: Add a label saying "Press SPACE"
 	var label = Label.new()
-	label.text = "PRESS F"
-	label.position = Vector2(-30, -50)
+	label.text = "PRESS SPACE"
+	label.position = Vector2(-50, -50)
 	add_child(label)
 
 # This function updates the killer's score
