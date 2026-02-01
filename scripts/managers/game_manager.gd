@@ -32,17 +32,21 @@ func spawn_npcs():
 	print("Spawning ", NPC_COUNT, " NPCs...")
 	
 	for i in range(NPC_COUNT):
-		var npc = NPC_SCENE.instantiate()
-		
-		# Ensure unique name for network sync
-		npc.name = "NPC_" + str(i)
-		
 		# Randomize position
 		var random_x = randf_range(-SPAWN_RANGE_X, SPAWN_RANGE_X)
 		var random_y = randf_range(-SPAWN_RANGE_Y, SPAWN_RANGE_Y)
-		npc.position = Vector2(random_x, random_y)
+		var pos = Vector2(random_x, random_y)
+		var npc_name = "NPC_" + str(i)
 		
-		get_parent().call_deferred("add_child", npc)
+		# Call RPC to spawn on all clients
+		spawn_single_npc.rpc(pos, npc_name)
+
+@rpc("authority", "call_local")
+func spawn_single_npc(pos: Vector2, npc_name: String):
+	var npc = NPC_SCENE.instantiate()
+	npc.name = npc_name
+	npc.position = pos
+	get_parent().call_deferred("add_child", npc)
 
 func spawn_scattered_items():
 	print("Spawning scattered items...")
