@@ -360,14 +360,18 @@ func pickup_item(item):
 			# Sync life gain to others so they know
 			rpc("sync_lives", lives, 0)
 		else:
-			print("Lives full! Potion consumed.")
+			print("Lives full! Potion left on ground.")
+			return # Important: Return early so item is NOT destroyed
 	else:
 		# TYPE 1 (GUN) or TYPE 2 (MASK) -> Add to inventory
 		if inventory.size() < 3:
 			inventory.append(item.type)
 			update_inventory_ui()
+		else:
+			print("Inventory full! Item left on ground.")
+			return # Return early if inventory full
 	
-	# Destroy item globally
+	# Destroy item globally (only if we actually picked it up)
 	var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
 	if game_manager:
 		game_manager.rpc("destroy_item", item.name)
