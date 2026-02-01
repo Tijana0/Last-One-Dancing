@@ -5,9 +5,6 @@ var type = ItemType.POTION
 
 func _ready():
 	add_to_group("pickups")
-	
-	# Randomize type if not set
-	type = ItemType.values().pick_random()
 	update_visuals()
 
 func update_visuals():
