@@ -375,34 +375,36 @@ func become_crown_pickup():
 func pickup_item(item):
 	print("Picked up item type: ", item.type)
 	
-	# TYPE 0: POTION (Extra Life)
-	if item.type == 0:
-		if lives < 3:
-			lives += 1
-			update_lives_ui()
-			print("Used Potion! Lives: ", lives)
-			# Sync life gain to others so they know
-			rpc("sync_lives", lives, 0)
-		else:
-			print("Lives full! Potion left on ground.")
-			return # Important: Return early so item is NOT destroyed
+	# Add to inventory if space available
+	if inventory.size() < 3:
+		inventory.append(item.type)
+		update_inventory_ui()
 	else:
-		# TYPE 1 (GUN) or TYPE 2 (MASK) -> Add to inventory
-		if inventory.size() < 3:
-			inventory.append(item.type)
-			update_inventory_ui()
-		else:
-			print("Inventory full! Item left on ground.")
-			return # Return early if inventory full
+		print("Inventory full! Item left on ground.")
+		return
 	
-	# Destroy item globally (only if we actually picked it up)
+	# Destroy item globally
 	var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
 	if game_manager:
 		game_manager.rpc("destroy_item", item.name)
 
 func use_potion():
-	# Deprecated
-	pass
+	# Find first potion (type 0) in inventory
+	var potion_index = inventory.find(0)
+	
+	if potion_index != -1:
+		if lives < 3:
+			print("Using Potion...")
+			lives += 1
+			inventory.remove_at(potion_index)
+			update_lives_ui()
+			update_inventory_ui()
+			# Sync life gain to others
+			rpc("sync_lives", lives, 0)
+		else:
+			print("Lives full! Can't use potion.")
+	else:
+		print("No potion in inventory.")
 
 func update_inventory_ui():
 	if not inventory_container: return
@@ -419,13 +421,14 @@ func update_inventory_ui():
 		if i < inventory.size():
 			var type = inventory[i]
 			var inv_sprite = Sprite2D.new()
+			inv_sprite.scale = Vector2(0.1, 0.1) # Default scale
 			
 			if type == 0: # POTION
 				inv_sprite.texture = TEX_POTION
-				inv_sprite.scale = Vector2(0.07, 0.07)
+				inv_sprite.scale = Vector2(0.08, 0.08)
 			elif type == 1: # GUN
 				inv_sprite.texture = TEX_GUN
-				inv_sprite.scale = Vector2(0.06, 0.06)
+				inv_sprite.scale = Vector2(0.05, 0.05) # Even smaller
 			elif type == 2: # MASK
 				inv_sprite.texture = TEX_MASK
 				inv_sprite.scale = Vector2(0.2, 0.2)
