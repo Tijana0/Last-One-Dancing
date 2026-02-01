@@ -65,6 +65,8 @@ func _ready():
 		var camera = Camera2D.new()
 		add_child(camera)
 		camera.enabled = true
+		camera.position_smoothing_enabled = true
+		camera.make_current()
 		
 	if game_over_layer:
 		game_over_layer.visible = false
