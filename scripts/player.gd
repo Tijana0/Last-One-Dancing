@@ -24,7 +24,7 @@ var is_npc = false
 var inventory = []
 
 # --- REFERENCES ---
-@onready var sprite = $Sprite2D 
+@onready var animated_sprite = $AnimatedSprite 
 @onready var lives_container = $LivesContainer
 @onready var game_over_layer = $GameOverLayer
 @onready var inventory_container = $InventoryContainer
@@ -42,8 +42,9 @@ func _ready():
 	print("PLAYER READY (Lives: ", lives, ") - ", player_name)
 
 	# Random color for each player
-	if sprite:
-		sprite.modulate = Color(randf(), randf(), randf())
+	if animated_sprite:
+		animated_sprite.modulate = Color(randf(), randf(), randf())
+		animated_sprite.play("idle")
 	
 	add_to_group("players")
 	update_lives_ui()
@@ -83,6 +84,15 @@ func _physics_process(delta):
 	# Movement
 	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	velocity = direction * speed
+	
+	# ANIMATION BASED ON MOVEMENT
+	if animated_sprite and not is_dancing:
+		if velocity.length() > 0:
+			if animated_sprite.animation != "walk":
+				animated_sprite.play("walk")
+		else:
+			if animated_sprite.animation != "idle":
+				animated_sprite.play("idle")
 	
 	move_and_slide()
 	
@@ -183,8 +193,10 @@ func start_dance():
 	if dance_indicator:
 		dance_indicator.visible = true
 	
-	if sprite:
-		sprite.modulate = Color.YELLOW
+	if animated_sprite:
+		if animated_sprite.animation != "dance":
+			animated_sprite.play("dance")
+		animated_sprite.modulate = Color.YELLOW
 
 func end_dance():
 	print(name, " stopped dancing")
@@ -195,8 +207,9 @@ func end_dance():
 		dance_indicator.visible = false
 	
 	# Back to idle and random color
-	if sprite:
-		sprite.modulate = Color(randf(), randf(), randf())
+	if animated_sprite:
+		animated_sprite.play("idle")
+		animated_sprite.modulate = Color(randf(), randf(), randf())
 
 # --- KILL SYSTEM ---
 func attempt_kill():
@@ -259,11 +272,11 @@ func sync_lives(new_lives: int, killer_id: int):
 		)
 		
 		# Flash effect
-		if sprite:
-			sprite.modulate.a = 0.3
+		if animated_sprite:
+			animated_sprite.modulate.a = 0.3
 			await get_tree().create_timer(0.5).timeout
 			if lives > 0:
-				sprite.modulate.a = 1.0
+				animated_sprite.modulate.a = 1.0
 	else:
 		# Death
 		print(name, " ELIMINATED!")
@@ -290,9 +303,10 @@ func sync_lives(new_lives: int, killer_id: int):
 func become_crown_pickup():
 	print("Crown dropped at ", global_position)
 	
-	if sprite:
-		sprite.modulate = Color(1, 0.8, 0)  # Gold
-		sprite.scale = Vector2(0.5, 0.5)
+	if animated_sprite:
+		animated_sprite.play("idle")  # Stop animating
+		animated_sprite.modulate = Color(1, 0.8, 0)  # Gold
+		animated_sprite.scale = Vector2(0.5, 0.5)
 	
 	add_to_group("crown_pickups")
 	$CollisionShape2D.set_deferred("disabled", true)
