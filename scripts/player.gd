@@ -449,7 +449,7 @@ func update_inventory_ui():
 			
 			if type == 0: # POTION
 				inv_sprite.texture = TEX_POTION
-				inv_sprite.scale = Vector2(0.08, 0.08)
+				inv_sprite.scale = Vector2(0.06, 0.06)
 			elif type == 1: # GUN
 				inv_sprite.texture = TEX_GUN
 				inv_sprite.scale = Vector2(0.05, 0.05) # Even smaller
