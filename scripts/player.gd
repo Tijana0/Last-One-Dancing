@@ -380,7 +380,7 @@ func become_crown_pickup():
 	# Show Crown Sprite
 	var crown_sprite = Sprite2D.new()
 	crown_sprite.texture = TEX_CROWN
-	crown_sprite.scale = Vector2(0.3, 0.3) # Adjust scale
+	crown_sprite.scale = Vector2(0.15, 0.15) # Made smaller
 	add_child(crown_sprite)
 	
 	add_to_group("crown_pickups")
