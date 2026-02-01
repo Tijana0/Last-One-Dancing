@@ -1,9 +1,18 @@
 extends Node
 
+# --- CONFIGURATION ---
 const KILLS_TO_WIN = 999 # Disabled old win condition
+const SPAWN_RANGE_X = 400.0
+const SPAWN_RANGE_Y = 300.0
+
+# NPC Settings (from feat-npc-ai)
+const NPC_SCENE = preload("res://prefabs/npc.tscn")
+const NPC_COUNT = 15  # Balanced count
+
 var crown_holder_id = -1
 var crown_npc_spawned = false
 
+# Pickup Settings (from feat-item-pickup)
 const PICKUP_SCENE = preload("res://prefabs/pickup_item.tscn")
 const PICKUP_COUNT = 3
 
@@ -11,7 +20,29 @@ func _ready():
 	print("GameManager ready")
 	
 	if multiplayer.is_server():
+		# Spawn background NPCs
+		spawn_npcs()
+		# Spawn scattered items
 		spawn_scattered_items()
+
+func spawn_npcs():
+	if not multiplayer.is_server():
+		return
+
+	print("Spawning ", NPC_COUNT, " NPCs...")
+	
+	for i in range(NPC_COUNT):
+		var npc = NPC_SCENE.instantiate()
+		
+		# Ensure unique name for network sync
+		npc.name = "NPC_" + str(i)
+		
+		# Randomize position
+		var random_x = randf_range(-SPAWN_RANGE_X, SPAWN_RANGE_X)
+		var random_y = randf_range(-SPAWN_RANGE_Y, SPAWN_RANGE_Y)
+		npc.position = Vector2(random_x, random_y)
+		
+		get_parent().call_deferred("add_child", npc)
 
 func spawn_scattered_items():
 	print("Spawning scattered items...")
@@ -49,15 +80,12 @@ func check_survivors():
 	
 	for p in players:
 		# Count only real players who are alive
-		if p.lives > 0 and not p.get("is_npc"):
+		if p.get("lives") != null and p.lives > 0 and not p.get("is_npc"):
 			alive_count += 1
 			
 	print("Alive players: ", alive_count)
 	
 	# If only 1 player is left standing, spawn the Boss NPC
-	# Note: In single player testing, alive_count will be 1 initially.
-	# So this triggers immediately if alone?
-	# Better to trigger if alive_count == 1.
 	if alive_count <= 1:
 		spawn_crown_npc.rpc()
 
@@ -95,6 +123,9 @@ func spawn_crown_npc():
 	if npc.has_node("Sprite2D"):
 		npc.get_node("Sprite2D").modulate = Color(1, 0.8, 0) # Gold
 		npc.get_node("Sprite2D").scale = Vector2(1.5, 1.5) # Bigger
+	elif npc.has_node("AnimatedSprite"): # Handle AnimatedSprite case
+		npc.get_node("AnimatedSprite").modulate = Color(1, 0.8, 0)
+		npc.get_node("AnimatedSprite").scale = Vector2(1.5, 1.5)
 		
 	# Animate Entry
 	var tween = create_tween()

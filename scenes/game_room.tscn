@@ -17,3 +17,7 @@ color = Color(0.34, 0.037400004, 0.20382991, 1)
 [node name="GameManager" parent="." unique_id=454037030 instance=ExtResource("1_gm")]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1796710325]
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1384218375]
+_spawnable_scenes = PackedStringArray("uid://dsmqohxdfj6x2")
+spawn_path = NodePath("..")
