@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://c2wpwjt4cnl4v"]
 
 [ext_resource type="Texture2D" uid="uid://si5mmnxoe7lj" path="res://icon.svg" id="1_3vyb7"]
-[ext_resource type="Script" uid="uid://b50sqfgq3rlm3" path="res://scripts/player.gd" id="1_g2els"]
+[ext_resource type="Script" uid="uid://dq8qjcxgaed2p" path="res://scripts/player.gd" id="1_g2els"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g2els"]
 size = Vector2(126, 127)
@@ -16,32 +16,32 @@ texture = ExtResource("1_3vyb7")
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_g2els")
 
-[node name="LivesContainer" type="HBoxContainer" parent="."]
+[node name="LivesContainer" type="HBoxContainer" parent="." unique_id=1942603809]
 offset_left = -64.0
 offset_top = -90.0
 offset_right = 64.0
 offset_bottom = -70.0
 alignment = 1
 
-[node name="Heart1" type="ColorRect" parent="LivesContainer"]
+[node name="Heart1" type="ColorRect" parent="LivesContainer" unique_id=740347086]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(1, 0, 0, 1)
 
-[node name="Heart2" type="ColorRect" parent="LivesContainer"]
+[node name="Heart2" type="ColorRect" parent="LivesContainer" unique_id=922237664]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(1, 0, 0, 1)
 
-[node name="Heart3" type="ColorRect" parent="LivesContainer"]
+[node name="Heart3" type="ColorRect" parent="LivesContainer" unique_id=1599576001]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(1, 0, 0, 1)
 
-[node name="GameOverLayer" type="CanvasLayer" parent="."]
+[node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=865989661]
 visible = false
 
-[node name="Background" type="ColorRect" parent="GameOverLayer"]
+[node name="Background" type="ColorRect" parent="GameOverLayer" unique_id=1362988782]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -49,7 +49,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.784314)
 
-[node name="Label" type="Label" parent="GameOverLayer"]
+[node name="Label" type="Label" parent="GameOverLayer" unique_id=1986616660]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -66,33 +66,39 @@ text = "YOU DIED"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="InventoryContainer" type="HBoxContainer" parent="."]
+[node name="InventoryContainer" type="HBoxContainer" parent="." unique_id=1435694472]
 offset_left = -64.0
 offset_top = 60.0
 offset_right = 64.0
 offset_bottom = 90.0
 alignment = 1
 
-[node name="Slot1" type="ColorRect" parent="InventoryContainer"]
+[node name="Slot1" type="ColorRect" parent="InventoryContainer" unique_id=1804760851]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(0, 0, 0, 0.5)
 
-[node name="Icon" type="Node2D" parent="InventoryContainer/Slot1"]
+[node name="Icon" type="Node2D" parent="InventoryContainer/Slot1" unique_id=1950118744]
 position = Vector2(15, 15)
 
-[node name="Slot2" type="ColorRect" parent="InventoryContainer"]
+[node name="Slot2" type="ColorRect" parent="InventoryContainer" unique_id=1522306388]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(0, 0, 0, 0.5)
 
-[node name="Icon" type="Node2D" parent="InventoryContainer/Slot2"]
+[node name="Icon" type="Node2D" parent="InventoryContainer/Slot2" unique_id=1953594775]
 position = Vector2(15, 15)
 
-[node name="Slot3" type="ColorRect" parent="InventoryContainer"]
+[node name="Slot3" type="ColorRect" parent="InventoryContainer" unique_id=1177333354]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(0, 0, 0, 0.5)
 
-[node name="Icon" type="Node2D" parent="InventoryContainer/Slot3"]
+[node name="Icon" type="Node2D" parent="InventoryContainer/Slot3" unique_id=1547092152]
 position = Vector2(15, 15)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=648634652]
+limit_left = -1250
+limit_top = -999
+limit_right = 1250
+limit_bottom = 1001

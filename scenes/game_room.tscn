@@ -7,6 +7,7 @@
 script = ExtResource("1_2xdb1")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=975775729]
+custom_minimum_size = Vector2(2500, 2000)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -19,5 +20,5 @@ color = Color(0.34, 0.037400004, 0.20382991, 1)
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1796710325]
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1384218375]
-_spawnable_scenes = PackedStringArray("uid://dsmqohxdfj6x2")
+_spawnable_scenes = PackedStringArray("")
 spawn_path = NodePath("..")
