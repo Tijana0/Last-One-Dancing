@@ -23,55 +23,29 @@ grow_horizontal = 2
 grow_vertical = 2
 texture = ExtResource("2_bg")
 expand_mode = 1
-stretch_mode = 6
 
-[node name="CenterContainer" type="CenterContainer" parent="Control"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Control"]
 layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
+offset_left = -250.0
+offset_top = -120.0
+offset_right = 250.0
+offset_bottom = -70.0
 grow_horizontal = 2
-grow_vertical = 2
-
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterContainer"]
-layout_mode = 2
-theme_override_constants/separation = 20
-
-[node name="TitleLabel" type="Label" parent="Control/CenterContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 64
-text = "ELIMINATED"
-horizontal_alignment = 1
-
-[node name="SubtitleLabel" type="Label" parent="Control/CenterContainer/VBoxContainer"]
-layout_mode = 2
-text = "You Have Been Unmasked"
-horizontal_alignment = 1
-
-[node name="StatsContainer" type="VBoxContainer" parent="Control/CenterContainer/VBoxContainer"]
-layout_mode = 2
-
-[node name="KillsLabel" type="Label" parent="Control/CenterContainer/VBoxContainer/StatsContainer"]
-layout_mode = 2
-text = "Your Eliminations: 0"
-
-[node name="DancesLabel" type="Label" parent="Control/CenterContainer/VBoxContainer/StatsContainer"]
-layout_mode = 2
-text = "Dances Performed: 0"
-
-[node name="KillerLabel" type="Label" parent="Control/CenterContainer/VBoxContainer/StatsContainer"]
-layout_mode = 2
-text = "Eliminated By: Unknown"
-
-[node name="HBoxContainer" type="HBoxContainer" parent="Control/CenterContainer/VBoxContainer"]
-layout_mode = 2
-theme_override_constants/separation = 20
+grow_vertical = 0
+theme_override_constants/separation = 40
 alignment = 1
 
-[node name="RetryButton" type="Button" parent="Control/CenterContainer/VBoxContainer/HBoxContainer"]
+[node name="RetryButton" type="Button" parent="Control/HBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 text = "Seek Revenge"
 
-[node name="MainMenuButton" type="Button" parent="Control/CenterContainer/VBoxContainer/HBoxContainer"]
+[node name="MainMenuButton" type="Button" parent="Control/HBoxContainer"]
+custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 text = "Retire"

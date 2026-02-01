@@ -1,29 +1,19 @@
 extends CanvasLayer
 
-@onready var title_label = $Control/CenterContainer/VBoxContainer/TitleLabel
-@onready var subtitle_label = $Control/CenterContainer/VBoxContainer/SubtitleLabel
-@onready var kills_label = $Control/CenterContainer/VBoxContainer/StatsContainer/KillsLabel
-@onready var dances_label = $Control/CenterContainer/VBoxContainer/StatsContainer/DancesLabel
-@onready var lives_label = $Control/CenterContainer/VBoxContainer/StatsContainer/LivesLabel
-@onready var play_again_button = $Control/CenterContainer/VBoxContainer/HBoxContainer/PlayAgainButton
-@onready var main_menu_button = $Control/CenterContainer/VBoxContainer/HBoxContainer/MainMenuButton
+@onready var play_again_button = $Control/HBoxContainer/PlayAgainButton
+@onready var main_menu_button = $Control/HBoxContainer/MainMenuButton
 
+# Stats kept in variables in case needed for logic, but UI labels removed
 var player_kills = 0
 var player_dances = 0
 var player_lives = 0
 
 func _ready():
-	# Display stats
-	update_stats(player_kills, player_dances, player_lives)
-	
 	# Connect buttons
-	play_again_button.pressed.connect(_on_play_again)
-	main_menu_button.pressed.connect(_on_main_menu)
-
-func update_stats(kills: int, dances: int, lives: int):
-	if kills_label: kills_label.text = "Eliminations: " + str(kills)
-	if dances_label: dances_label.text = "Dances Performed: " + str(dances)
-	if lives_label: lives_label.text = "Lives Remaining: " + str(lives) + "/3"
+	if play_again_button:
+		play_again_button.pressed.connect(_on_play_again)
+	if main_menu_button:
+		main_menu_button.pressed.connect(_on_main_menu)
 
 func _on_play_again():
 	get_tree().change_scene_to_file("res://scenes/lobby.tscn")
