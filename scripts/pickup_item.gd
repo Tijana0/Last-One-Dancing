@@ -22,7 +22,7 @@ func update_visuals():
 		sprite.scale = Vector2(0.1, 0.1)
 	elif type == ItemType.GUN:
 		sprite.texture = TEX_GUN
-		sprite.scale = Vector2(0.1, 0.1)
+		sprite.scale = Vector2(0.08, 0.08)
 	else:
 		sprite.texture = TEX_MASK
 		sprite.scale = Vector2(0.35, 0.35)

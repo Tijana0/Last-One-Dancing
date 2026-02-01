@@ -410,7 +410,7 @@ func update_inventory_ui():
 				inv_sprite.scale = Vector2(0.07, 0.07)
 			elif type == 1: # GUN
 				inv_sprite.texture = TEX_GUN
-				inv_sprite.scale = Vector2(0.07, 0.07)
+				inv_sprite.scale = Vector2(0.06, 0.06)
 			elif type == 2: # MASK
 				inv_sprite.texture = TEX_MASK
 				inv_sprite.scale = Vector2(0.2, 0.2)
