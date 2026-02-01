@@ -404,14 +404,16 @@ func update_inventory_ui():
 		if i < inventory.size():
 			var type = inventory[i]
 			var inv_sprite = Sprite2D.new()
-			inv_sprite.scale = Vector2(0.1, 0.1) # Uniform size for UI slots
 			
 			if type == 0: # POTION
 				inv_sprite.texture = TEX_POTION
+				inv_sprite.scale = Vector2(0.08, 0.08)
 			elif type == 1: # GUN
 				inv_sprite.texture = TEX_GUN
+				inv_sprite.scale = Vector2(0.08, 0.08)
 			elif type == 2: # MASK
 				inv_sprite.texture = TEX_MASK
+				inv_sprite.scale = Vector2(0.15, 0.15)
 			
 			icon_node.add_child(inv_sprite)
 

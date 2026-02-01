@@ -109,34 +109,38 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 20.0
-offset_top = -50.0
-offset_right = 148.0
+offset_top = -70.0
+offset_right = 200.0
 offset_bottom = -20.0
 grow_vertical = 0
+alignment = 0
 
-[node name="Slot1" type="ColorRect" parent="HUD/InventoryContainer" unique_id=419356005]
+[node name="Slot1" type="ColorRect" parent="HUD/InventoryContainer"]
+custom_minimum_size = Vector2(60, 50)
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(0, 0, 0, 0.5)
 
-[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot1" unique_id=693889895]
-position = Vector2(15, 15)
+[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot1"]
+position = Vector2(30, 25)
 
-[node name="Slot2" type="ColorRect" parent="HUD/InventoryContainer" unique_id=1597742044]
+[node name="Slot2" type="ColorRect" parent="HUD/InventoryContainer"]
+custom_minimum_size = Vector2(60, 50)
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(0, 0, 0, 0.5)
 
-[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot2" unique_id=1146626593]
-position = Vector2(15, 15)
+[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot2"]
+position = Vector2(30, 25)
 
-[node name="Slot3" type="ColorRect" parent="HUD/InventoryContainer" unique_id=1367116814]
+[node name="Slot3" type="ColorRect" parent="HUD/InventoryContainer"]
+custom_minimum_size = Vector2(60, 50)
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(0, 0, 0, 0.5)
 
-[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot3" unique_id=1199567296]
-position = Vector2(15, 15)
+[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot3"]
+position = Vector2(30, 25)
 
 [node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=1944903136]
 visible = false
