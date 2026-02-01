@@ -407,13 +407,13 @@ func update_inventory_ui():
 			
 			if type == 0: # POTION
 				inv_sprite.texture = TEX_POTION
-				inv_sprite.scale = Vector2(0.08, 0.08)
+				inv_sprite.scale = Vector2(0.07, 0.07)
 			elif type == 1: # GUN
 				inv_sprite.texture = TEX_GUN
-				inv_sprite.scale = Vector2(0.08, 0.08)
+				inv_sprite.scale = Vector2(0.07, 0.07)
 			elif type == 2: # MASK
 				inv_sprite.texture = TEX_MASK
-				inv_sprite.scale = Vector2(0.15, 0.15)
+				inv_sprite.scale = Vector2(0.2, 0.2)
 			
 			icon_node.add_child(inv_sprite)
 

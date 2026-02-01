@@ -19,12 +19,12 @@ func update_visuals():
 	
 	if type == ItemType.POTION:
 		sprite.texture = TEX_POTION
-		sprite.scale = Vector2(0.12, 0.12)
+		sprite.scale = Vector2(0.1, 0.1)
 	elif type == ItemType.GUN:
 		sprite.texture = TEX_GUN
-		sprite.scale = Vector2(0.12, 0.12)
+		sprite.scale = Vector2(0.1, 0.1)
 	else:
 		sprite.texture = TEX_MASK
-		sprite.scale = Vector2(0.25, 0.25)
+		sprite.scale = Vector2(0.35, 0.35)
 
 # Removed _draw() as we use sprites now
