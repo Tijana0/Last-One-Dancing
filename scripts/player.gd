@@ -375,13 +375,37 @@ func become_crown_pickup():
 func pickup_item(item):
 	print("Picked up item type: ", item.type)
 	
-	# Add to inventory if space available
-	if inventory.size() < 3:
-		inventory.append(item.type)
-		update_inventory_ui()
+	# TYPE 0: POTION (Extra Life)
+	if item.type == 0:
+		# 1. Instant Heal Effect
+		if lives < 3:
+			lives += 1
+			update_lives_ui()
+			print("Instant Heal! Lives: ", lives)
+			rpc("sync_lives", lives, 0)
+		else:
+			print("Lives full, but picking up for inventory.")
+			
+		# 2. Add to Inventory (Reserve)
+		if inventory.size() < 3:
+			inventory.append(item.type)
+			update_inventory_ui()
+		else:
+			# If inventory full, we still consumed the instant heal part?
+			# Logic: If healed, we should probably destroy the item on ground.
+			# If NOT healed (full) AND inventory full, then leave it.
+			if lives >= 3: # Was full before heal check? No, lives is current.
+				# If we are now full (3), and inventory full, we effectively used it (if we healed) or wasted it.
+				# But let's assume if inventory full, we can't carry the "reserve".
+				pass
 	else:
-		print("Inventory full! Item left on ground.")
-		return
+		# TYPE 1 (GUN) or TYPE 2 (MASK) -> Add to inventory
+		if inventory.size() < 3:
+			inventory.append(item.type)
+			update_inventory_ui()
+		else:
+			print("Inventory full! Item left on ground.")
+			return # Return early if inventory full
 	
 	# Destroy item globally
 	var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
