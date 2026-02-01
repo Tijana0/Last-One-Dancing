@@ -23,6 +23,11 @@ var has_crown = false
 var is_npc = false
 var inventory = []
 
+# Preload textures for UI
+const TEX_POTION = preload("res://assets/Potion.PNG")
+const TEX_GUN = preload("res://assets/gun.PNG")
+const TEX_MASK = preload("res://assets/gold_mask.png")
+
 # --- REFERENCES ---
 @onready var animated_sprite = $AnimatedSprite 
 @onready var hud = $HUD
@@ -119,7 +124,7 @@ func _physics_process(delta):
 	if Input.is_physical_key_pressed(KEY_SPACE):
 		attempt_interact()
 		
-	# E KEY: USE ITEM (Potion)
+	# E KEY: USE ITEM (Potion) - Deprecated for instant use but kept for future?
 	if Input.is_physical_key_pressed(KEY_E):
 		use_potion()
 
@@ -361,10 +366,11 @@ func pickup_item(item):
 			lives += 1
 			update_lives_ui()
 			print("Used Potion! Lives: ", lives)
+			# Sync life gain to others so they know
 			rpc("sync_lives", lives, 0)
 		else:
 			print("Lives full! Potion left on ground.")
-			return # Don't destroy item
+			return # Important: Return early so item is NOT destroyed
 	else:
 		# TYPE 1 (GUN) or TYPE 2 (MASK) -> Add to inventory
 		if inventory.size() < 3:
@@ -372,15 +378,15 @@ func pickup_item(item):
 			update_inventory_ui()
 		else:
 			print("Inventory full! Item left on ground.")
-			return
+			return # Return early if inventory full
 	
-	# Destroy item globally
+	# Destroy item globally (only if we actually picked it up)
 	var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
 	if game_manager:
 		game_manager.rpc("destroy_item", item.name)
 
 func use_potion():
-	# Deprecated / Not used if potion is instant
+	# Deprecated
 	pass
 
 func update_inventory_ui():
@@ -397,24 +403,17 @@ func update_inventory_ui():
 			
 		if i < inventory.size():
 			var type = inventory[i]
-			var shape = Polygon2D.new()
-			shape.color = Color.WHITE
+			var inv_sprite = Sprite2D.new()
+			inv_sprite.scale = Vector2(0.1, 0.1) # Scale down for UI slot
 			
-			if type == 0: # POTION -> CIRCLE
-				var circle_points = []
-				for d in range(12):
-					var angle = deg_to_rad(d * 30)
-					circle_points.append(Vector2(cos(angle)*10, sin(angle)*10))
-				shape.polygon = PackedVector2Array(circle_points)
-				shape.color = Color.GREEN 
-			elif type == 1: # GUN -> RECTANGLE
-				shape.polygon = PackedVector2Array([Vector2(-15, -10), Vector2(15, -10), Vector2(15, 10), Vector2(-15, 10)])
-				shape.color = Color.GRAY
-			elif type == 2: # MASK -> TRIANGLE
-				shape.polygon = PackedVector2Array([Vector2(0, -15), Vector2(15, 10), Vector2(-15, 10)])
-				shape.color = Color.GOLD
+			if type == 0: # POTION
+				inv_sprite.texture = TEX_POTION
+			elif type == 1: # GUN
+				inv_sprite.texture = TEX_GUN
+			elif type == 2: # MASK
+				inv_sprite.texture = TEX_MASK
 			
-			icon_node.add_child(shape)
+			icon_node.add_child(inv_sprite)
 
 @rpc("any_peer", "call_local")
 func add_kill():
