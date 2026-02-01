@@ -404,7 +404,7 @@ func update_inventory_ui():
 		if i < inventory.size():
 			var type = inventory[i]
 			var inv_sprite = Sprite2D.new()
-			inv_sprite.scale = Vector2(0.1, 0.1) # Scale down for UI slot
+			inv_sprite.scale = Vector2(0.1, 0.1) # Uniform size for UI slots
 			
 			if type == 0: # POTION
 				inv_sprite.texture = TEX_POTION
