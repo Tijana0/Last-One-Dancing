@@ -118,6 +118,10 @@ func _physics_process(delta):
 	# SPACE: INTERACT (Crown pickup / Items)
 	if Input.is_physical_key_pressed(KEY_SPACE):
 		attempt_interact()
+		
+	# E KEY: USE ITEM (Potion)
+	if Input.is_physical_key_pressed(KEY_E):
+		use_potion()
 
 # --- NETWORK SYNC ---
 func _process(delta):
@@ -351,30 +355,35 @@ func become_crown_pickup():
 func pickup_item(item):
 	print("Picked up item type: ", item.type)
 	
-	# TYPE 0: POTION (Extra Life)
-	if item.type == 0:
-		if lives < 3:
-			lives += 1
-			update_lives_ui()
-			print("Used Potion! Lives: ", lives)
-			# Sync life gain to others so they know
-			rpc("sync_lives", lives, 0)
-		else:
-			print("Lives full! Potion left on ground.")
-			return # Important: Return early so item is NOT destroyed
+	if inventory.size() < 3:
+		inventory.append(item.type)
+		update_inventory_ui()
 	else:
-		# TYPE 1 (GUN) or TYPE 2 (MASK) -> Add to inventory
-		if inventory.size() < 3:
-			inventory.append(item.type)
-			update_inventory_ui()
-		else:
-			print("Inventory full! Item left on ground.")
-			return # Return early if inventory full
+		print("Inventory full! Item left on ground.")
+		return 
 	
 	# Destroy item globally (only if we actually picked it up)
 	var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
 	if game_manager:
 		game_manager.rpc("destroy_item", item.name)
+
+func use_potion():
+	# Find first potion (type 0) in inventory
+	var potion_index = inventory.find(0)
+	
+	if potion_index != -1:
+		if lives < 3:
+			print("Using Potion...")
+			lives += 1
+			inventory.remove_at(potion_index)
+			update_lives_ui()
+			update_inventory_ui()
+			# Sync life gain to others
+			rpc("sync_lives", lives, 0)
+		else:
+			print("Lives full! Can't use potion.")
+	else:
+		print("No potion in inventory.")
 
 func update_inventory_ui():
 	if not inventory_container: return
@@ -399,7 +408,7 @@ func update_inventory_ui():
 					var angle = deg_to_rad(d * 30)
 					circle_points.append(Vector2(cos(angle)*10, sin(angle)*10))
 				shape.polygon = PackedVector2Array(circle_points)
-				shape.color = Color.GREEN # Optional: Color code inventory too?
+				shape.color = Color.GREEN 
 			elif type == 1: # GUN -> RECTANGLE
 				shape.polygon = PackedVector2Array([Vector2(-15, -10), Vector2(15, -10), Vector2(15, 10), Vector2(-15, 10)])
 				shape.color = Color.GRAY
