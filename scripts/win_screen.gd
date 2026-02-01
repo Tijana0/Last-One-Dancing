@@ -16,7 +16,10 @@ func _ready():
 		main_menu_button.pressed.connect(_on_main_menu)
 
 func _on_play_again():
+	print("Play Again Pressed")
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+	queue_free()
 
 func _on_main_menu():
+	print("Quit Pressed")
 	get_tree().quit()
