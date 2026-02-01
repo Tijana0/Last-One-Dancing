@@ -25,9 +25,10 @@ var inventory = []
 
 # --- REFERENCES ---
 @onready var animated_sprite = $AnimatedSprite 
-@onready var lives_container = $LivesContainer
+@onready var hud = $HUD
+@onready var lives_container = $HUD/LivesContainer
 @onready var game_over_layer = $GameOverLayer
-@onready var inventory_container = $InventoryContainer
+@onready var inventory_container = $HUD/InventoryContainer
 @onready var dance_indicator = $DanceIndicator
 
 # --- SETUP ---
@@ -47,6 +48,14 @@ func _ready():
 		animated_sprite.play("idle")
 	
 	add_to_group("players")
+	
+	# HUD VISIBILITY LOGIC
+	if hud:
+		if is_multiplayer_authority() and not is_npc:
+			hud.visible = true
+		else:
+			hud.visible = false
+	
 	update_lives_ui()
 	
 	if dance_indicator:

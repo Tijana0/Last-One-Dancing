@@ -80,27 +80,65 @@ animation = &"idle"
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_g2els")
 
-[node name="LivesContainer" type="HBoxContainer" parent="." unique_id=1208768259]
-offset_left = -64.0
-offset_top = -90.0
-offset_right = 64.0
-offset_bottom = -70.0
-alignment = 1
+[node name="HUD" type="CanvasLayer" parent="."]
+visible = false
 
-[node name="Heart1" type="ColorRect" parent="LivesContainer" unique_id=751434008]
+[node name="LivesContainer" type="HBoxContainer" parent="HUD" unique_id=1208768259]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 148.0
+offset_bottom = 40.0
+alignment = 0
+
+[node name="Heart1" type="ColorRect" parent="HUD/LivesContainer" unique_id=751434008]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(1, 0, 0, 1)
 
-[node name="Heart2" type="ColorRect" parent="LivesContainer" unique_id=305656652]
+[node name="Heart2" type="ColorRect" parent="HUD/LivesContainer" unique_id=305656652]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(1, 0, 0, 1)
 
-[node name="Heart3" type="ColorRect" parent="LivesContainer" unique_id=1755358124]
+[node name="Heart3" type="ColorRect" parent="HUD/LivesContainer" unique_id=1755358124]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(1, 0, 0, 1)
+
+[node name="InventoryContainer" type="HBoxContainer" parent="HUD" unique_id=999999999]
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -50.0
+offset_right = 148.0
+offset_bottom = -20.0
+grow_vertical = 0
+alignment = 0
+
+[node name="Slot1" type="ColorRect" parent="HUD/InventoryContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0, 0, 0, 0.5)
+
+[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot1"]
+position = Vector2(15, 15)
+
+[node name="Slot2" type="ColorRect" parent="HUD/InventoryContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0, 0, 0, 0.5)
+
+[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot2"]
+position = Vector2(15, 15)
+
+[node name="Slot3" type="ColorRect" parent="HUD/InventoryContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0, 0, 0, 0.5)
+
+[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot3"]
+position = Vector2(15, 15)
 
 [node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=1944903136]
 visible = false
@@ -141,34 +179,3 @@ horizontal_alignment = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=1216483793]
 shape = SubResource("CircleShape2D_r66lb")
-
-[node name="InventoryContainer" type="HBoxContainer" parent="." unique_id=999999999]
-offset_left = -64.0
-offset_top = 60.0
-offset_right = 64.0
-offset_bottom = 90.0
-alignment = 1
-
-[node name="Slot1" type="ColorRect" parent="InventoryContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-color = Color(0, 0, 0, 0.5)
-
-[node name="Icon" type="Node2D" parent="InventoryContainer/Slot1"]
-position = Vector2(15, 15)
-
-[node name="Slot2" type="ColorRect" parent="InventoryContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-color = Color(0, 0, 0, 0.5)
-
-[node name="Icon" type="Node2D" parent="InventoryContainer/Slot2"]
-position = Vector2(15, 15)
-
-[node name="Slot3" type="ColorRect" parent="InventoryContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-color = Color(0, 0, 0, 0.5)
-
-[node name="Icon" type="Node2D" parent="InventoryContainer/Slot3"]
-position = Vector2(15, 15)
