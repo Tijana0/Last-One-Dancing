@@ -3,6 +3,17 @@
 [ext_resource type="Script" uid="uid://bbqj0wjcabkf7" path="res://scripts/main_menu_ui.gd" id="1_l6cm7"]
 [ext_resource type="Texture2D" path="res://assets/start.png" id="2_start"]
 
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_maroon"]
+bg_color = Color(0.4, 0, 0.1, 1)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 10.0
+expand_margin_top = 5.0
+expand_margin_right = 10.0
+expand_margin_bottom = 5.0
+
 [node name="MainMenu" type="Control" unique_id=984325076]
 layout_mode = 3
 anchors_preset = 15
@@ -29,23 +40,25 @@ anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -200.0
+offset_left = -250.0
 offset_top = -150.0
-offset_right = 200.0
+offset_right = 250.0
 offset_bottom = -100.0
 grow_horizontal = 2
 grow_vertical = 0
-theme_override_constants/separation = 40
+theme_override_constants/separation = 60
 alignment = 1
 
 [node name="PlayButton" type="Button" parent="HBoxContainer" unique_id=990685667]
-custom_minimum_size = Vector2(180, 50)
+custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_maroon")
 text = "Enter Ballroom"
 
 [node name="QuitButton" type="Button" parent="HBoxContainer" unique_id=1170808431]
-custom_minimum_size = Vector2(180, 50)
+custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 theme_override_font_sizes/font_size = 25
+theme_override_styles/normal = SubResource("StyleBoxFlat_maroon")
 text = "Leave"
