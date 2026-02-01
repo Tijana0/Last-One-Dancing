@@ -1,12 +1,12 @@
-extends Control
+extends CanvasLayer
 
-@onready var title_label = $CenterContainer/VBoxContainer/TitleLabel
-@onready var subtitle_label = $CenterContainer/VBoxContainer/SubtitleLabel
-@onready var kills_label = $CenterContainer/VBoxContainer/StatsContainer/KillsLabel
-@onready var dances_label = $CenterContainer/VBoxContainer/StatsContainer/DancesLabel
-@onready var lives_label = $CenterContainer/VBoxContainer/StatsContainer/LivesLabel
-@onready var play_again_button = $CenterContainer/VBoxContainer/HBoxContainer/PlayAgainButton
-@onready var main_menu_button = $CenterContainer/VBoxContainer/HBoxContainer/MainMenuButton
+@onready var title_label = $Control/CenterContainer/VBoxContainer/TitleLabel
+@onready var subtitle_label = $Control/CenterContainer/VBoxContainer/SubtitleLabel
+@onready var kills_label = $Control/CenterContainer/VBoxContainer/StatsContainer/KillsLabel
+@onready var dances_label = $Control/CenterContainer/VBoxContainer/StatsContainer/DancesLabel
+@onready var lives_label = $Control/CenterContainer/VBoxContainer/StatsContainer/LivesLabel
+@onready var play_again_button = $Control/CenterContainer/VBoxContainer/HBoxContainer/PlayAgainButton
+@onready var main_menu_button = $Control/CenterContainer/VBoxContainer/HBoxContainer/MainMenuButton
 
 var player_kills = 0
 var player_dances = 0
