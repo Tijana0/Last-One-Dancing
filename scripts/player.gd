@@ -28,61 +28,23 @@ const TEX_POTION = preload("res://assets/Potion.PNG")
 const TEX_GUN = preload("res://assets/gun.PNG")
 const TEX_MASK = preload("res://assets/gold_mask.png")
 const TEX_CROWN = preload("res://assets/crown.PNG")
+const TEX_HEART_FULL = preload("res://assets/heart_full.PNG")
+const TEX_HEART_EMPTY = preload("res://assets/heart_empty.PNG")
 
-# --- REFERENCES ---
-@onready var animated_sprite = $AnimatedSprite 
-@onready var hud = $HUD
-@onready var lives_container = $HUD/LivesContainer
-@onready var game_over_layer = $GameOverLayer
-@onready var inventory_container = $HUD/InventoryContainer
-@onready var dance_indicator = $DanceIndicator
-
-# --- SETUP ---
-func _enter_tree():
-	var id = name.to_int()
-	if id == 0:
-		set_multiplayer_authority(1)
-	else:
-		set_multiplayer_authority(id)
-
-func _ready():
-	print("PLAYER READY (Lives: ", lives, ") - ", player_name)
-
-	# Random color for each player
-	if animated_sprite:
-		animated_sprite.modulate = Color(randf(), randf(), randf())
-		animated_sprite.play("idle")
-	
-	add_to_group("players")
-	
-	# HUD VISIBILITY LOGIC
-	if hud:
-		if is_multiplayer_authority() and not is_npc:
-			hud.visible = true
-		else:
-			hud.visible = false
-	
-	update_lives_ui()
-	
-	if dance_indicator:
-		dance_indicator.visible = false
-	
-	if is_multiplayer_authority():
-		var camera = Camera2D.new()
-		add_child(camera)
-		camera.enabled = true
-		camera.position_smoothing_enabled = true
-		camera.make_current()
-		
-	if game_over_layer:
-		game_over_layer.visible = false
-
+# ...
 # --- UI UPDATES ---
 func update_lives_ui():
 	if lives_container:
 		var hearts = lives_container.get_children()
 		for i in range(hearts.size()):
-			hearts[i].visible = i < lives
+			# Set texture based on current lives
+			if i < lives:
+				hearts[i].texture = TEX_HEART_FULL
+			else:
+				hearts[i].texture = TEX_HEART_EMPTY
+			
+			# Ensure they are always visible (just swapping textures)
+			hearts[i].visible = true
 
 # --- MOVEMENT LOOP ---
 func _physics_process(delta):

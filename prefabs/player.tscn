@@ -2,6 +2,8 @@
 
 [ext_resource type="Script" uid="uid://dq8qjcxgaed2p" path="res://scripts/player.gd" id="1_g2els"]
 [ext_resource type="Texture2D" uid="uid://dcf21qql7jrat" path="res://assets/spritesheet_test.png" id="2_4dohe"]
+[ext_resource type="Texture2D" path="res://assets/heart_full.PNG" id="3_heart_full"]
+[ext_resource type="Texture2D" path="res://assets/heart_empty.PNG" id="4_heart_empty"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4dohe"]
 atlas = ExtResource("2_4dohe")
@@ -89,22 +91,29 @@ visible = false
 offset_left = 20.0
 offset_top = 20.0
 offset_right = 148.0
-offset_bottom = 40.0
+offset_bottom = 60.0
+theme_override_constants/separation = 5
 
-[node name="Heart1" type="ColorRect" parent="HUD/LivesContainer" unique_id=751434008]
+[node name="Heart1" type="TextureRect" parent="HUD/LivesContainer" unique_id=751434008]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-size_flags_horizontal = 3
-color = Color(1, 0, 0, 1)
+texture = ExtResource("3_heart_full")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Heart2" type="ColorRect" parent="HUD/LivesContainer" unique_id=305656652]
+[node name="Heart2" type="TextureRect" parent="HUD/LivesContainer" unique_id=305656652]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-size_flags_horizontal = 3
-color = Color(1, 0, 0, 1)
+texture = ExtResource("3_heart_full")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Heart3" type="ColorRect" parent="HUD/LivesContainer" unique_id=1755358124]
+[node name="Heart3" type="TextureRect" parent="HUD/LivesContainer" unique_id=1755358124]
+custom_minimum_size = Vector2(40, 40)
 layout_mode = 2
-size_flags_horizontal = 3
-color = Color(1, 0, 0, 1)
+texture = ExtResource("3_heart_full")
+expand_mode = 1
+stretch_mode = 5
 
 [node name="InventoryContainer" type="HBoxContainer" parent="HUD" unique_id=999999999]
 anchors_preset = 2
