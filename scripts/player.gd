@@ -448,7 +448,8 @@ func update_inventory_ui():
 		if i < inventory.size():
 			var type = inventory[i]
 			var inv_sprite = Sprite2D.new()
-			inv_sprite.scale = Vector2(0.1, 0.1) # Default scale
+			inv_sprite.centered = true
+			inv_sprite.position = Vector2.ZERO # Center relative to Icon node (40,40)
 			
 			if type == 0: # POTION
 				inv_sprite.texture = TEX_POTION
