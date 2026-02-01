@@ -98,7 +98,7 @@ color = Color(0, 0, 0, 0.5)
 position = Vector2(15, 15)
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=648634652]
-limit_left = -1250
-limit_top = -997
-limit_right = 1250
-limit_bottom = 1003
+limit_left = -1248
+limit_top = -996
+limit_right = 1252
+limit_bottom = 1004
