@@ -280,8 +280,15 @@ func sync_lives(new_lives: int, killer_id: int):
 		
 		remove_from_group("players")
 		
+		# --- CHECK GAME STATE ---
+		var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
+		
 		if has_crown:
 			become_crown_pickup()
+		else:
+			# A regular player died. Check if it's time to spawn the Boss.
+			if game_manager and multiplayer.is_server():
+				game_manager.check_survivors()
 
 func become_crown_pickup():
 	print("Crown dropped at ", global_position)
