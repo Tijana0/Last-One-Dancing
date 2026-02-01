@@ -285,14 +285,9 @@ func attempt_kill():
 		print("Checking target: ", target.name, " | Distance: ", distance)
 		
 		if distance < kill_range:
-<<<<<<< HEAD
-			print("!!! HIT CONFIRMED on ", player.name, " !!!")
-			player.rpc_id(player.get_multiplayer_authority(), "request_damage", name.to_int())       
-=======
 			print("!!! HIT CONFIRMED on ", target.name, " !!!")
 			# Pass calculated damage
-			target.rpc_id(target.get_multiplayer_authority(), "request_damage", name.to_int(), damage)      
->>>>>>> main
+			target.rpc_id(target.get_multiplayer_authority(), "request_damage", name.to_int(), damage)   
 			return
 			
 	print("Failed: No one close enough")
