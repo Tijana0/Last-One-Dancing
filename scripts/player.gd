@@ -308,7 +308,11 @@ func pickup_item(item):
 	print("Picked up item type: ", item.type)
 	inventory.append(item.type)
 	update_inventory_ui()
-	item.queue_free()
+	
+	# Destroy item globally
+	var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
+	if game_manager:
+		game_manager.rpc("destroy_item", item.name)
 
 func update_inventory_ui():
 	if not inventory_container: return

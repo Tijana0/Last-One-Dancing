@@ -29,6 +29,12 @@ func spawn_item(pos: Vector2, item_name: String):
 	item.position = pos
 	get_parent().call_deferred("add_child", item)
 
+@rpc("any_peer", "call_local")
+func destroy_item(item_name: String):
+	var item = get_parent().get_node_or_null(item_name)
+	if item:
+		item.queue_free()
+
 # Called by player.gd when a player dies
 func check_survivors():
 	# Only server manages game state
