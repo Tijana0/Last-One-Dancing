@@ -16,10 +16,18 @@ func _ready():
 func spawn_scattered_items():
 	print("Spawning scattered items...")
 	for i in range(PICKUP_COUNT):
-		var item = PICKUP_SCENE.instantiate()
-		item.name = "Pickup_" + str(i)
-		item.position = Vector2(randf_range(-400, 400), randf_range(-300, 300))
-		get_parent().call_deferred("add_child", item, true) # Replicate to clients
+		var item_name = "Pickup_" + str(i)
+		var pos = Vector2(randf_range(-400, 400), randf_range(-300, 300))
+		
+		# Call RPC to spawn on all clients (including server)
+		spawn_item.rpc(pos, item_name)
+
+@rpc("authority", "call_local")
+func spawn_item(pos: Vector2, item_name: String):
+	var item = PICKUP_SCENE.instantiate()
+	item.name = item_name
+	item.position = pos
+	get_parent().call_deferred("add_child", item)
 
 # Called by player.gd when a player dies
 func check_survivors():
