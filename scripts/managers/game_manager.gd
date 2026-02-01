@@ -23,7 +23,7 @@ func check_survivors():
 		# Count only real players who are alive
 		if p.lives > 0 and not p.get("is_npc"):
 			alive_count += 1
-            
+			
 	print("Alive players: ", alive_count)
 	
 	# If only 1 player is left standing, spawn the Boss NPC

@@ -4,9 +4,16 @@ extends CharacterBody2D
 @export var speed = 300.0
 
 # --- KILL SYSTEM PROPERTIES ---
-@export var kill_range = 100.0   # How close you must be to kill (pixels)
-@export var kill_cooldown = 1.0  # Seconds you must wait between kills
-var last_kill_time = 0.0         # Tracks when you last killed
+@export var kill_range = 150.0
+@export var kill_cooldown = 1.0
+var last_kill_time = 0.0
+
+# --- DANCE SYSTEM PROPERTIES ---
+@export var dance_range = 150.0
+var is_dancing = false
+var dance_duration = 3.0
+var dance_timer = 0.0
+var dance_partner = null
 
 # --- GAME LOGIC VARIABLES ---
 var player_name = "Player"
@@ -16,35 +23,33 @@ var has_crown = false
 var is_npc = false
 
 # --- REFERENCES ---
-# IMPORTANT: Make sure your Sprite node is named "Sprite2D" in the scene tree!
-@onready var sprite = $Sprite2D 
+@onready var animated_sprite = $AnimatedSprite  # CHANGED
 @onready var lives_container = $LivesContainer
 @onready var game_over_layer = $GameOverLayer
+@onready var dance_indicator = $DanceIndicator
 
 # --- SETUP ---
 func _enter_tree():
-	# This helps the MultiplayerSpawner find this node and assign authority
 	var id = name.to_int()
 	if id == 0:
-		# If name is not a number (e.g. "CrownNPC"), assume Server (1) is authority
 		set_multiplayer_authority(1)
 	else:
 		set_multiplayer_authority(id)
 
 func _ready():
-	print("PLAYER READY (Lives: ", lives, ") - If this prints often, node is resetting!")
+	print("PLAYER READY (Lives: ", lives, ") - ", player_name)
+
+	# Random color for each player
+	if animated_sprite:
+		animated_sprite.modulate = Color(randf(), randf(), randf())
+		animated_sprite.play("idle")  # Start with idle animation
 	
-	# Give every player a random color so we can tell them apart for now
-	if sprite:
-		sprite.modulate = Color(randf(), randf(), randf())
-	
-	# CRITICAL: Add to group so players can find each other for killing
 	add_to_group("players")
-	
-	# Update UI initially
 	update_lives_ui()
 	
-	# Only enable a camera for the local player
+	if dance_indicator:
+		dance_indicator.visible = false
+	
 	if is_multiplayer_authority():
 		var camera = Camera2D.new()
 		add_child(camera)
@@ -58,71 +63,152 @@ func update_lives_ui():
 	if lives_container:
 		var hearts = lives_container.get_children()
 		for i in range(hearts.size()):
-			# Show heart if index is less than lives count
 			hearts[i].visible = i < lives
 
 # --- MOVEMENT LOOP ---
 func _physics_process(delta):
-	
-	# CRITICAL: If this player node does not belong to me, STOP.
 	if not is_multiplayer_authority():
 		return
 		
-	# NPCs should not be controlled by player input
 	if is_npc:
 		return
 	
-	# Movement Logic
+	# Can't move while dancing
+	if is_dancing:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
+	
+	# Movement
 	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	velocity = direction * speed
+	
+	# ANIMATION BASED ON MOVEMENT
+	if animated_sprite and not is_dancing:
+		if velocity.length() > 0:
+			if animated_sprite.animation != "walk":
+				animated_sprite.play("walk")
+		else:
+			if animated_sprite.animation != "idle":
+				animated_sprite.play("idle")
+		print("Current animation:", animated_sprite.animation, " Frame:", animated_sprite.frame)
+
+
+	
 	move_and_slide()
 	
-	# --- INTERACTION: PICKUP CROWN ---
+	# F KEY: DANCE
 	if Input.is_physical_key_pressed(KEY_F):
-		if Input.is_action_just_pressed("interact") or true: # Hacky 'just pressed' check or rely on cooldown?
-			# Simple cooldown to prevent spamming RPCs
-			pass
-			
-		var pickups = get_tree().get_nodes_in_group("crown_pickups")
-		for pickup in pickups:
-			if global_position.distance_to(pickup.global_position) < 100.0:
-				print("Picking up crown!")
-				var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
-				if game_manager:
-					# I am the winner!
-					game_manager.rpc("trigger_victory", name.to_int())
-					# Destroy the pickup locally/remotely? Victory screen covers it.
-				break
+		attempt_dance()
 	
-	# --- DEBUG TEST: BYPASS INPUT MAP ---
-	# We use is_physical_key_pressed to ignore the Input Map entirely
+	# K KEY: KILL
 	if Input.is_physical_key_pressed(KEY_K):
-		# We use 'just_pressed' logic manually to stop it from spamming
-		if not Input.is_action_just_pressed("kill"): # Just a check to see if map is working
-			print("Raw 'K' key detected, but Input Map 'kill' did NOT trigger!")
-		
 		attempt_kill()
+	
+	# SPACE: INTERACT (Crown pickup)
+	if Input.is_physical_key_pressed(KEY_SPACE):
+		attempt_interact()
 
 # --- NETWORK SYNC ---
 func _process(delta):
 	if is_multiplayer_authority():
-		# If I am me, send my position to the server/others
-		rpc("sync_transform", position, rotation)
+		rpc("sync_transform", position)
+	
+	# Update dance timer
+	if is_dancing:
+		dance_timer -= delta
+		if dance_timer <= 0:
+			end_dance()
 
 @rpc("any_peer", "unreliable")
-func sync_transform(pos: Vector2, rot: float):
-	# If I am NOT the authority (meaning this is someone else's player),
-	# update their position on my screen.
+func sync_transform(pos: Vector2):
 	if not is_multiplayer_authority():
 		position = pos
-		rotation = rot
 
-# --- KILL SYSTEM FUNCTIONS ---
-
-func attempt_kill():
-	print("--- ATTEMPTING KILL ---") # 1. Confirm Input works
+# --- INTERACT SYSTEM (Space) ---
+func attempt_interact():
+	print("--- ATTEMPTING INTERACT ---")
 	
-	# Check Cooldown
+	var pickups = get_tree().get_nodes_in_group("crown_pickups")
+	for pickup in pickups:
+		if global_position.distance_to(pickup.global_position) < 100.0:
+			print("Picking up crown!")
+			var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
+			if game_manager:
+				game_manager.rpc("trigger_victory", name.to_int())
+			break
+
+# --- DANCE SYSTEM (F key) ---
+func attempt_dance():
+	print("--- ATTEMPTING DANCE ---")
+	
+	if is_dancing:
+		print("Already dancing!")
+		return
+	
+	var current_time = Time.get_ticks_msec() / 1000.0
+	if current_time - last_kill_time < 0.5:
+		print("Dance cooldown active")
+		return
+	
+	last_kill_time = current_time
+	
+	var players = get_tree().get_nodes_in_group("players")
+	print("Found ", players.size(), " players to dance with")
+	
+	for player in players:
+		if player == self:
+			continue
+		
+		var distance = global_position.distance_to(player.global_position)
+		print("Checking ", player.name, " | Distance: ", distance)
+		
+		if distance < dance_range:
+			print("!!! DANCE STARTED with ", player.name, " !!!")
+			
+			start_dance.rpc()
+			player.start_dance.rpc()
+			
+			dance_partner = player
+			return
+	
+	print("No one close enough to dance with")
+
+@rpc("any_peer", "call_local")
+func start_dance():
+	is_dancing = true
+	dance_timer = dance_duration
+	
+	if dance_indicator:
+		dance_indicator.visible = true
+	
+	if animated_sprite:
+		if animated_sprite.animation != "dance":
+			animated_sprite.play("dance")
+		animated_sprite.modulate = Color.YELLOW
+
+
+func end_dance():
+	print(name, " stopped dancing")
+	is_dancing = false
+	dance_partner = null
+	
+	if dance_indicator:
+		dance_indicator.visible = false
+	
+	# Back to idle and random color
+	if animated_sprite:
+		animated_sprite.play("idle")
+		animated_sprite.modulate = Color(randf(), randf(), randf())
+
+# --- KILL SYSTEM ---
+func attempt_kill():
+	print("--- ATTEMPTING KILL ---")
+	
+	if is_dancing:
+		print("Can't kill while dancing!")
+		return
+	
 	var current_time = Time.get_ticks_msec() / 1000.0
 	if current_time - last_kill_time < kill_cooldown:
 		print("Failed: Cooldown active")
@@ -130,139 +216,92 @@ func attempt_kill():
 	
 	last_kill_time = current_time
 	
-	# Find players
 	var players = get_tree().get_nodes_in_group("players")
-	print("Found ", players.size(), " players in group.") # 2. Confirm Group works
-	
-	var killed_someone = false
+	print("Found ", players.size(), " players in group.")
 	
 	for player in players:
-		# Skip self
 		if player == self:
 			continue 
-			
-		# Check distance
-		var distance = global_position.distance_to(player.global_position)
-		print("Checking target: ", player.name, " | Distance: ", distance) # 3. Confirm Distance
 		
-		# TEMPORARY: Increased range for testing
-		if distance < 300.0: # Increased from 100 to 300 to make testing easier
+		var distance = global_position.distance_to(player.global_position)
+		print("Checking target: ", player.name, " | Distance: ", distance)
+		
+		if distance < kill_range:
 			print("!!! HIT CONFIRMED on ", player.name, " !!!")
-			# Request damage on the victim (handled by their machine)
 			player.rpc_id(player.get_multiplayer_authority(), "request_damage", name.to_int())      
-			killed_someone = true
-			break 
+			return
 			
-	if not killed_someone:
-		print("Failed: No one close enough")
+	print("Failed: No one close enough")
 
 # --- DAMAGE & HEALTH SYNC ---
-
-# 1. Called by the Attacker (or anyone) -> Runs on the Victim (Authority)
 @rpc("any_peer", "call_local")
 func request_damage(attacker_id: int):
-	print("DEBUG: request_damage called on ", name, " (Authority: ", is_multiplayer_authority(), ")")
-	# Only the owner of this player node handles the damage logic
-	if not is_multiplayer_authority():
-		print("DEBUG: Ignored request_damage (Not Authority)")
-		return
-		
-	lives -= 1
-	print("DEBUG: ", name, " (Auth) processed damage. Decremented lives to: ", lives)
+	print("DEBUG: request_damage called on ", name)
 	
-	# Broadcast the new state to everyone (including self)
+	if not is_multiplayer_authority():
+		print("DEBUG: Ignored (Not Authority)")
+		return
+	
+	lives -= 1
+	print("DEBUG: ", name, " lives decreased to: ", lives)
+	
 	rpc("sync_lives", lives, attacker_id)
 
-# 2. Called by the Victim (Authority) -> Runs on Everyone
 @rpc("authority", "call_local")
 func sync_lives(new_lives: int, killer_id: int):
-	print("DEBUG: sync_lives called on ", name, ". New lives: ", new_lives, " (Local Old Lives: ", lives, ")")
+	print("DEBUG: sync_lives - ", name, " now has ", new_lives, " lives")
 	lives = new_lives
 	update_lives_ui()
-	
-	print(name, " updated lives to: ", lives)
 
 	if lives > 0:
-		# --- RESPAWN LOGIC ---
-		# Get actual screen size to ensure we respawn inside the view
+		# Respawn
 		var screen_size = get_viewport_rect().size
 		global_position = Vector2(
 			randf_range(50, screen_size.x - 50), 
 			randf_range(50, screen_size.y - 50)
 		)
 		
-		# Visual Feedback (Flash transparent)
-		if sprite:
-			sprite.modulate.a = 0.3
-			await get_tree().create_timer(1.0).timeout
-			# Only restore opacity if we haven't died in the meantime
+		# Flash effect
+		if animated_sprite:
+			animated_sprite.modulate.a = 0.3
+			await get_tree().create_timer(0.5).timeout
 			if lives > 0:
-				sprite.modulate.a = 1.0
+				animated_sprite.modulate.a = 1.0
 	else:
-		# --- PERMANENT DEATH LOGIC ---
-		print(name, " has been ELIMINATED!")
+		# Death
+		print(name, " ELIMINATED!")
 		
-		# 1. Hide the player and disable collision
 		visible = false
 		$CollisionShape2D.set_deferred("disabled", true)
-		set_physics_process(false) # Stop movement
+		set_physics_process(false)
 		
-		# Show Game Over screen ONLY if I am the one who died AND I am not an NPC
 		if is_multiplayer_authority() and game_over_layer and not is_npc:
 			game_over_layer.visible = true
 		
-		# 2. Remove from "players" group so they can't be targeted anymore
 		remove_from_group("players")
 		
-		# --- CHECK GAME STATE ---
-		var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
-		
-		if is_npc and has_crown:
-			# The Boss NPC died! Drop the crown!
-			become_crown_pickup()
-		else:
-			# A regular player died. Check if it's time to spawn the Boss.
-			# Only the server needs to do this check to avoid duplicate spawns
-			if game_manager and multiplayer.is_server():
-				game_manager.check_survivors()
-		
-		# 3. Award the kill to the killer
-		# We need to tell the killer to update their score.
-		# logic: If I am the killer, I find my own player node and tell it to add a kill.
-		if multiplayer.get_unique_id() == killer_id:
-			var players = get_tree().get_nodes_in_group("players")
-			for p in players:
-				if p.name.to_int() == killer_id:
-					p.rpc("add_kill")
-					break
-
-		# Drop crown logic (Placeholder for next step)
 		if has_crown:
-			has_crown = false
+			become_crown_pickup()
 
 func become_crown_pickup():
-	print("BOSS DEFEATED! Crown dropped.")
+	print("Crown dropped at ", global_position)
 	
-	# Visuals: Looks like blood/dead body
-	if sprite:
-		sprite.modulate = Color(0.8, 0, 0) # Blood Red
-		rotation_degrees = 90 # Lying on side
-		scale = Vector2(1, 1) # Reset scale
-		
-	# Interaction Logic
+	if animated_sprite:
+		animated_sprite.play("idle")  # Stop animating
+		animated_sprite.modulate = Color(1, 0.8, 0)  # Gold
+		animated_sprite.scale = Vector2(0.5, 0.5)
+	
 	add_to_group("crown_pickups")
-	
-	# Disable physics completely
 	$CollisionShape2D.set_deferred("disabled", true)
 	
-	# Optional: Add a label saying "Press F"
 	var label = Label.new()
-	label.text = "PRESS F"
-	label.position = Vector2(-30, -50)
+	label.text = "PRESS SPACE"
+	label.position = Vector2(-50, -80)
 	add_child(label)
 
-# This function updates the killer's score
 @rpc("any_peer", "call_local")
 func add_kill():
 	kill_count += 1
 	print("My Kill Count: ", kill_count)
+	
+	
