@@ -175,23 +175,29 @@ func attempt_dance():
 	
 	last_kill_time = current_time
 	
-	var players = get_tree().get_nodes_in_group("players")
-	print("Found ", players.size(), " players to dance with")
+	var targets = []
+	targets.append_array(get_tree().get_nodes_in_group("players"))
+	targets.append_array(get_tree().get_nodes_in_group("npcs"))
 	
-	for player in players:
-		if player == self:
+	print("Found ", targets.size(), " potential dance partners")
+	
+	for target in targets:
+		if target == self:
 			continue
 		
-		var distance = global_position.distance_to(player.global_position)
-		print("Checking ", player.name, " | Distance: ", distance)
+		var distance = global_position.distance_to(target.global_position)
+		print("Checking ", target.name, " | Distance: ", distance)
 		
 		if distance < dance_range:
-			print("!!! DANCE STARTED with ", player.name, " !!!")
+			print("!!! DANCE STARTED with ", target.name, " !!!")
 			
 			start_dance.rpc()
-			player.start_dance.rpc()
 			
-			dance_partner = player
+			# If target is a player, call its RPC
+			if target.has_method("start_dance"):
+				target.rpc("start_dance")
+			
+			dance_partner = target
 			return
 	
 	print("No one close enough to dance with")

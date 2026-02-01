@@ -9,13 +9,15 @@ extends CharacterBody2D
 var move_direction = Vector2.ZERO
 var time_until_change = 0.0
 var is_dancing = false
+var forced_dance = false
 
 # @onready var sprite = $Sprite2D
 @onready var sprite = $Body
 
 func _ready():
 	# Visuals: Random color (Must match player logic eventually)
-	sprite.modulate = Color(randf(), randf(), randf())
+	if sprite:
+		sprite.modulate = Color(randf(), randf(), randf())
 	
 	# Add to a group so we can tell them apart in code (even if players can't tell visually)
 	add_to_group("npcs")
@@ -27,6 +29,11 @@ func _physics_process(delta):
 	# CRITICAL: Only the Server thinks for NPCs. 
 	# Clients just watch what the server tells them.
 	if not multiplayer.is_server():
+		return
+
+	# Forced Dance Override
+	if forced_dance:
+		velocity = Vector2.ZERO
 		return
 
 	# Timer Logic
@@ -41,6 +48,34 @@ func _physics_process(delta):
 	else:
 		# If dancing, stand still (Velocity 0)
 		velocity = Vector2.ZERO
+
+# --- INTERACTION ---
+@rpc("any_peer", "call_local")
+func start_dance():
+	print(name, " forced to dance!")
+	forced_dance = true
+	is_dancing = true
+	
+	# Visual Feedback
+	if sprite:
+		sprite.modulate = Color.YELLOW
+	
+	# Stop moving immediately
+	velocity = Vector2.ZERO
+	
+	# Dance for fixed duration then resume AI
+	if multiplayer.is_server():
+		await get_tree().create_timer(3.0).timeout
+		end_forced_dance()
+
+func end_forced_dance():
+	forced_dance = false
+	is_dancing = false
+	time_until_change = 0 # Force new decision immediately
+	
+	# Restore random color
+	if sprite:
+		sprite.modulate = Color(randf(), randf(), randf())
 
 # --- AI LOGIC (Server Only) ---
 func decide_next_move():
