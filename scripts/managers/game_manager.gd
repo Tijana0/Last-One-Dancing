@@ -4,8 +4,22 @@ const KILLS_TO_WIN = 999 # Disabled old win condition
 var crown_holder_id = -1
 var crown_npc_spawned = false
 
+const PICKUP_SCENE = preload("res://prefabs/pickup_item.tscn")
+const PICKUP_COUNT = 10
+
 func _ready():
 	print("GameManager ready")
+	
+	if multiplayer.is_server():
+		spawn_scattered_items()
+
+func spawn_scattered_items():
+	print("Spawning scattered items...")
+	for i in range(PICKUP_COUNT):
+		var item = PICKUP_SCENE.instantiate()
+		item.name = "Pickup_" + str(i)
+		item.position = Vector2(randf_range(-400, 400), randf_range(-300, 300))
+		get_parent().call_deferred("add_child", item, true) # Replicate to clients
 
 # Called by player.gd when a player dies
 func check_survivors():

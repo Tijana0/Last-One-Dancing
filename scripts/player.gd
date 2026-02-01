@@ -21,12 +21,14 @@ var lives = 3
 var kill_count = 0
 var has_crown = false
 var is_npc = false
+var inventory = []
 
 # --- REFERENCES ---
-@onready var animated_sprite = $AnimatedSprite  # CHANGED
+# IMPORTANT: Make sure your Sprite node is named "Sprite2D" in the scene tree!
+@onready var sprite = $Sprite2D 
 @onready var lives_container = $LivesContainer
 @onready var game_over_layer = $GameOverLayer
-@onready var dance_indicator = $DanceIndicator
+@onready var inventory_container = $InventoryContainer
 
 # --- SETUP ---
 func _enter_tree():
@@ -129,6 +131,7 @@ func sync_transform(pos: Vector2):
 func attempt_interact():
 	print("--- ATTEMPTING INTERACT ---")
 	
+	# 1. Crown (Priority)
 	var pickups = get_tree().get_nodes_in_group("crown_pickups")
 	for pickup in pickups:
 		if global_position.distance_to(pickup.global_position) < 100.0:
@@ -136,7 +139,51 @@ func attempt_interact():
 			var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
 			if game_manager:
 				game_manager.rpc("trigger_victory", name.to_int())
-			break
+			return
+
+	# 2. Items
+	var items = get_tree().get_nodes_in_group("pickups")
+	for item in items:
+		if global_position.distance_to(item.global_position) < 60.0:
+			if inventory.size() < 3:
+				pickup_item(item)
+				return
+
+func pickup_item(item):
+	print("Picked up item type: ", item.type)
+	inventory.append(item.type)
+	update_inventory_ui()
+	item.queue_free()
+
+func update_inventory_ui():
+	if not inventory_container: return
+	
+	for i in range(3):
+		var slot_name = "Slot" + str(i+1)
+		var slot = inventory_container.get_node(slot_name)
+		var icon_node = slot.get_node("Icon")
+		
+		# Clear previous drawing
+		for child in icon_node.get_children():
+			child.queue_free()
+			
+		if i < inventory.size():
+			var type = inventory[i]
+			var shape = Polygon2D.new()
+			shape.color = Color.WHITE
+			
+			if type == 0: # TRIANGLE
+				shape.polygon = PackedVector2Array([Vector2(0, -10), Vector2(10, 10), Vector2(-10, 10)])
+			elif type == 1: # CIRCLE
+				var circle_points = []
+				for d in range(12):
+					var angle = deg_to_rad(d * 30)
+					circle_points.append(Vector2(cos(angle)*10, sin(angle)*10))
+				shape.polygon = PackedVector2Array(circle_points)
+			elif type == 2: # SQUARE
+				shape.polygon = PackedVector2Array([Vector2(-10, -10), Vector2(10, -10), Vector2(10, 10), Vector2(-10, 10)])
+			
+			icon_node.add_child(shape)
 
 # --- DANCE SYSTEM (F key) ---
 func attempt_dance():

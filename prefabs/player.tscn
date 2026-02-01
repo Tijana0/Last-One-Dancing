@@ -1,111 +1,47 @@
-[gd_scene format=3 uid="uid://c6bjpr7x3e3cd"]
+[gd_scene format=3 uid="uid://c2wpwjt4cnl4v"]
 
+[ext_resource type="Texture2D" uid="uid://si5mmnxoe7lj" path="res://icon.svg" id="1_3vyb7"]
 [ext_resource type="Script" uid="uid://b50sqfgq3rlm3" path="res://scripts/player.gd" id="1_g2els"]
-[ext_resource type="Texture2D" uid="uid://dcf21qql7jrat" path="res://assets/spritesheet_test.png" id="2_4dohe"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_4dohe"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(0, 0, 62, 94)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r66lb"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(62, 0, 62, 94)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_1txc5"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(124, 0, 62, 94)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ht1c8"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(0, 0, 62, 94)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_g2jcq"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(0, 0, 62, 94)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_u51tk"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(62, 0, 62, 94)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_kbsxf"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_4dohe")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_r66lb")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_1txc5")
-}],
-"loop": true,
-"name": &"dance",
-"speed": 8.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ht1c8")
-}],
-"loop": true,
-"name": &"idle",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_g2jcq")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_u51tk")
-}],
-"loop": true,
-"name": &"walk",
-"speed": 10.0
-}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g2els"]
 size = Vector2(126, 127)
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_r66lb"]
-radius = 150.0
-
 [node name="Player" type="CharacterBody2D" unique_id=529327571]
 script = ExtResource("1_g2els")
 
-[node name="AnimatedSprite" type="AnimatedSprite2D" parent="." unique_id=346003072]
-sprite_frames = SubResource("SpriteFrames_kbsxf")
-animation = &"idle"
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=346553923]
+texture = ExtResource("1_3vyb7")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=979406219]
 position = Vector2(0, -0.5)
 shape = SubResource("RectangleShape2D_g2els")
 
-[node name="LivesContainer" type="HBoxContainer" parent="." unique_id=1208768259]
+[node name="LivesContainer" type="HBoxContainer" parent="."]
 offset_left = -64.0
 offset_top = -90.0
 offset_right = 64.0
 offset_bottom = -70.0
 alignment = 1
 
-[node name="Heart1" type="ColorRect" parent="LivesContainer" unique_id=751434008]
+[node name="Heart1" type="ColorRect" parent="LivesContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(1, 0, 0, 1)
 
-[node name="Heart2" type="ColorRect" parent="LivesContainer" unique_id=305656652]
+[node name="Heart2" type="ColorRect" parent="LivesContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(1, 0, 0, 1)
 
-[node name="Heart3" type="ColorRect" parent="LivesContainer" unique_id=1755358124]
+[node name="Heart3" type="ColorRect" parent="LivesContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 color = Color(1, 0, 0, 1)
 
-[node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=1944903136]
+[node name="GameOverLayer" type="CanvasLayer" parent="."]
 visible = false
 
-[node name="Background" type="ColorRect" parent="GameOverLayer" unique_id=1863012092]
+[node name="Background" type="ColorRect" parent="GameOverLayer"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -113,7 +49,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0, 0, 0, 0.784314)
 
-[node name="Label" type="Label" parent="GameOverLayer" unique_id=804328287]
+[node name="Label" type="Label" parent="GameOverLayer"]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
@@ -130,14 +66,33 @@ text = "YOU DIED"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="DanceIndicator" type="Label" parent="." unique_id=1824958057]
-visible = false
-offset_right = 160.0
-offset_bottom = 30.0
-text = "Dancing..."
-horizontal_alignment = 1
+[node name="InventoryContainer" type="HBoxContainer" parent="."]
+offset_left = -64.0
+offset_top = 60.0
+offset_right = 64.0
+offset_bottom = 90.0
+alignment = 1
 
-[node name="InteractionArea" type="Area2D" parent="." unique_id=1478164366]
+[node name="Slot1" type="ColorRect" parent="InventoryContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0, 0, 0, 0.5)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=1216483793]
-shape = SubResource("CircleShape2D_r66lb")
+[node name="Icon" type="Node2D" parent="InventoryContainer/Slot1"]
+position = Vector2(15, 15)
+
+[node name="Slot2" type="ColorRect" parent="InventoryContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0, 0, 0, 0.5)
+
+[node name="Icon" type="Node2D" parent="InventoryContainer/Slot2"]
+position = Vector2(15, 15)
+
+[node name="Slot3" type="ColorRect" parent="InventoryContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+color = Color(0, 0, 0, 0.5)
+
+[node name="Icon" type="Node2D" parent="InventoryContainer/Slot3"]
+position = Vector2(15, 15)
