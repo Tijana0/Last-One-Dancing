@@ -4,6 +4,7 @@
 [ext_resource type="Texture2D" uid="uid://dcf21qql7jrat" path="res://assets/spritesheet_test.png" id="2_4dohe"]
 [ext_resource type="Texture2D" path="res://assets/heart_full.PNG" id="3_heart_full"]
 [ext_resource type="Texture2D" path="res://assets/heart_empty.PNG" id="4_heart_empty"]
+[ext_resource type="Texture2D" path="res://assets/holder_items.PNG" id="5_holder_items"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4dohe"]
 atlas = ExtResource("2_4dohe")
@@ -120,38 +121,60 @@ anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 offset_left = 20.0
-offset_top = -100.0
-offset_right = 260.0
+offset_top = -180.0
+offset_right = 500.0
 offset_bottom = -20.0
 grow_vertical = 0
+theme_override_constants/separation = -100
 alignment = 0
 
-[node name="Slot1" type="ColorRect" parent="HUD/InventoryContainer"]
-custom_minimum_size = Vector2(80, 80)
+[node name="Slot1" type="TextureRect" parent="HUD/InventoryContainer"]
+custom_minimum_size = Vector2(160, 160)
 layout_mode = 2
 size_flags_horizontal = 3
-color = Color(0, 0, 0, 0.5)
+texture = ExtResource("5_holder_items")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot1"]
-position = Vector2(40, 40)
+[node name="Icon" type="Control" parent="HUD/InventoryContainer/Slot1"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Slot2" type="ColorRect" parent="HUD/InventoryContainer"]
-custom_minimum_size = Vector2(80, 80)
+[node name="Slot2" type="TextureRect" parent="HUD/InventoryContainer"]
+custom_minimum_size = Vector2(160, 160)
 layout_mode = 2
 size_flags_horizontal = 3
-color = Color(0, 0, 0, 0.5)
+texture = ExtResource("5_holder_items")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot2"]
-position = Vector2(40, 40)
+[node name="Icon" type="Control" parent="HUD/InventoryContainer/Slot2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
-[node name="Slot3" type="ColorRect" parent="HUD/InventoryContainer"]
-custom_minimum_size = Vector2(80, 80)
+[node name="Slot3" type="TextureRect" parent="HUD/InventoryContainer"]
+custom_minimum_size = Vector2(160, 160)
 layout_mode = 2
 size_flags_horizontal = 3
-color = Color(0, 0, 0, 0.5)
+texture = ExtResource("5_holder_items")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="Icon" type="Node2D" parent="HUD/InventoryContainer/Slot3"]
-position = Vector2(40, 40)
+[node name="Icon" type="Control" parent="HUD/InventoryContainer/Slot3"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="MaskDisplay" type="Control" parent="HUD" unique_id=2117243664]
 custom_minimum_size = Vector2(-80, 20)

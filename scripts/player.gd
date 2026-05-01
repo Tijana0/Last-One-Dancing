@@ -453,34 +453,54 @@ func use_potion():
 
 func update_inventory_ui():
 	if not inventory_container: return
-	
+
 	for i in range(3):
 		var slot_name = "Slot" + str(i+1)
 		var slot = inventory_container.get_node(slot_name)
 		var icon_node = slot.get_node("Icon")
-		
+
 		# Clear previous drawing
 		for child in icon_node.get_children():
 			child.queue_free()
-			
+
 		if i < inventory.size():
 			var type = inventory[i]
-			var inv_sprite = Sprite2D.new()
-			inv_sprite.centered = true
-			inv_sprite.position = Vector2.ZERO # Center relative to Icon node (40,40)
+			var item_texture = TextureRect.new()
+
+			# UI Centering Logic
+			item_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			item_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+
+			if type == 0: # POTION
+				item_texture.texture = TEX_POTION
+				item_texture.custom_minimum_size = Vector2(100, 100)
+			elif type == 1: # GUN
+				item_texture.texture = TEX_GUN
+				item_texture.custom_minimum_size = Vector2(80, 80)
+			elif type == 2: # MASK
+				item_texture.texture = TEX_MASK
+				item_texture.custom_minimum_size = Vector2(70, 70)
+
+			# Center the TextureRect inside the Icon (Control) node
+			item_texture.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+			
+			# MANUAL OFFSET: Move higher and to the left to fit assets
+			var offset_x = -50
+			var offset_y = -50
 			
 			if type == 0: # POTION
-				inv_sprite.texture = TEX_POTION
-				inv_sprite.scale = Vector2(0.06, 0.06)
+				offset_y = -60 
 			elif type == 1: # GUN
-				inv_sprite.texture = TEX_GUN
-				inv_sprite.scale = Vector2(0.05, 0.05) # Even smaller
+				offset_x = -40 # Bit more to the right
+				offset_y = -40 # Bit more down
 			elif type == 2: # MASK
-				inv_sprite.texture = TEX_MASK
-				inv_sprite.scale = Vector2(0.2, 0.2)
+				offset_x = -35 # Bit more to the left
+				offset_y = -35 # Even more down
 			
-			icon_node.add_child(inv_sprite)
-
+			item_texture.position.x += offset_x
+			item_texture.position.y += offset_y
+			
+			icon_node.add_child(item_texture)
 @rpc("any_peer", "call_local")
 func add_kill():
 	kill_count += 1
