@@ -91,26 +91,26 @@ visible = false
 [node name="LivesContainer" type="HBoxContainer" parent="HUD" unique_id=1208768259]
 offset_left = 10.0
 offset_top = 10.0
-offset_right = 138.0
-offset_bottom = 50.0
+offset_right = 200.0
+offset_bottom = 70.0
 theme_override_constants/separation = 5
 
 [node name="Heart1" type="TextureRect" parent="HUD/LivesContainer" unique_id=751434008]
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(60, 60)
 layout_mode = 2
 texture = ExtResource("3_heart_full")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Heart2" type="TextureRect" parent="HUD/LivesContainer" unique_id=305656652]
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(60, 60)
 layout_mode = 2
 texture = ExtResource("3_heart_full")
 expand_mode = 1
 stretch_mode = 5
 
 [node name="Heart3" type="TextureRect" parent="HUD/LivesContainer" unique_id=1755358124]
-custom_minimum_size = Vector2(40, 40)
+custom_minimum_size = Vector2(60, 60)
 layout_mode = 2
 texture = ExtResource("3_heart_full")
 expand_mode = 1
