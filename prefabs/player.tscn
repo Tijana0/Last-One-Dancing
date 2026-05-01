@@ -115,6 +115,51 @@ texture = ExtResource("3_heart_full")
 expand_mode = 1
 stretch_mode = 5
 
+[node name="Shortcuts" type="VBoxContainer" parent="HUD"]
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -220.0
+offset_top = -120.0
+offset_right = -20.0
+offset_bottom = -20.0
+grow_horizontal = 0
+grow_vertical = 0
+
+[node name="KillLabel" type="Label" parent="HUD/Shortcuts"]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "[K] KILL"
+horizontal_alignment = 2
+
+[node name="DanceLabel" type="Label" parent="HUD/Shortcuts"]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "[F] DANCE"
+horizontal_alignment = 2
+
+[node name="InteractLabel" type="Label" parent="HUD/Shortcuts"]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "[SPACE] INTERACT"
+horizontal_alignment = 2
+
+[node name="PotionLabel" type="Label" parent="HUD/Shortcuts"]
+layout_mode = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 4
+theme_override_font_sizes/font_size = 14
+text = "[E] USE POTION"
+horizontal_alignment = 2
+
 [node name="InventoryContainer" type="HBoxContainer" parent="HUD" unique_id=999999999]
 anchors_preset = 2
 anchor_top = 1.0
