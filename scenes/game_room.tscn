@@ -4,6 +4,18 @@
 [ext_resource type="PackedScene" uid="uid://ddawre7n71bdm" path="res://scenes/game_manager.tscn" id="1_gm"]
 [ext_resource type="AudioStream" uid="uid://drim102ofdaqu" path="res://assets/game-audio.mp3" id="3_mt38u"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
+size = Vector2(2500, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_bottom"]
+size = Vector2(2500, 20)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_left"]
+size = Vector2(20, 2000)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_right"]
+size = Vector2(20, 2000)
+
 [node name="GameRoom" type="Node2D" unique_id=1720131160]
 script = ExtResource("1_2xdb1")
 
@@ -26,3 +38,29 @@ spawn_path = NodePath("..")
 [node name="MusicPlayer" type="AudioStreamPlayer" parent="." unique_id=443771303]
 stream = ExtResource("3_mt38u")
 autoplay = true
+
+[node name="Boundaries" type="Node2D" parent="."]
+
+[node name="Wall_Top" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(0, -1000)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Top"]
+shape = SubResource("RectangleShape2D_top")
+
+[node name="Wall_Bottom" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(0, 1000)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Bottom"]
+shape = SubResource("RectangleShape2D_bottom")
+
+[node name="Wall_Left" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(-1250, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Left"]
+shape = SubResource("RectangleShape2D_left")
+
+[node name="Wall_Right" type="StaticBody2D" parent="Boundaries"]
+position = Vector2(1250, 0)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Right"]
+shape = SubResource("RectangleShape2D_right")

@@ -139,6 +139,14 @@ func _physics_process(delta):
 	
 	# Movement
 	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
+	
+	# Optional: Slight push away from items to prevent overlapping
+	var items = get_tree().get_nodes_in_group("pickups")
+	for item in items:
+		if global_position.distance_to(item.global_position) < 40.0:
+			var push_dir = (global_position - item.global_position).normalized()
+			direction = (direction + push_dir * 0.3).normalized()
+
 	velocity = direction * speed
 	
 	# ANIMATION BASED ON MOVEMENT

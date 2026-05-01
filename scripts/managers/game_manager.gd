@@ -1,20 +1,23 @@
 extends Node
 
 # --- CONFIGURATION ---
-const KILLS_TO_WIN = 999 # Disabled old win condition
-const SPAWN_RANGE_X = 400.0
-const SPAWN_RANGE_Y = 300.0
+const KILLS_TO_WIN = 999 
+const SPAWN_RANGE_X = 1200.0 # Match background (2500 width)
+const SPAWN_RANGE_Y = 950.0  # Match background (2000 height)
 
 # NPC Settings (from feat-npc-ai)
 const NPC_SCENE = preload("res://prefabs/npc.tscn")
-const NPC_COUNT = 15  # Balanced count
+const NPC_COUNT = 15  
 
 var crown_holder_id = -1
 var crown_npc_spawned = false
 
 # Pickup Settings (from feat-item-pickup)
 const PICKUP_SCENE = preload("res://prefabs/pickup_item.tscn")
-const PICKUP_COUNT = 3
+
+var spawn_timer = 0.0
+var waves_spawned = 0
+var total_waves = 1
 
 func _ready():
 	print("GameManager ready")
@@ -22,8 +25,26 @@ func _ready():
 	if multiplayer.is_server():
 		# Spawn background NPCs
 		spawn_npcs()
-		# Spawn scattered items
-		spawn_scattered_items()
+		
+		# Initial wave spawn
+		total_waves = 1 
+		spawn_item_wave()
+
+func _process(delta):
+	if not multiplayer.is_server():
+		return
+	
+	# Dynamically update total waves based on active players
+	var player_count = get_tree().get_nodes_in_group("players").size()
+	if player_count > total_waves:
+		total_waves = player_count
+		print("Total waves updated to: ", total_waves)
+
+	if waves_spawned < total_waves:
+		spawn_timer += delta
+		if spawn_timer >= randf_range(10.0, 15.0):
+			spawn_timer = 0.0
+			spawn_item_wave()
 
 func spawn_npcs():
 	if not multiplayer.is_server():
@@ -32,9 +53,9 @@ func spawn_npcs():
 	print("Spawning ", NPC_COUNT, " NPCs...")
 	
 	for i in range(NPC_COUNT):
-		# Randomize position
-		var random_x = randf_range(-SPAWN_RANGE_X, SPAWN_RANGE_X)
-		var random_y = randf_range(-SPAWN_RANGE_Y, SPAWN_RANGE_Y)
+		# Randomize position within boundaries
+		var random_x = randf_range(-SPAWN_RANGE_X + 50, SPAWN_RANGE_X - 50)
+		var random_y = randf_range(-SPAWN_RANGE_Y + 50, SPAWN_RANGE_Y - 50)
 		var pos = Vector2(random_x, random_y)
 		var npc_name = "NPC_" + str(i)
 		
@@ -48,22 +69,37 @@ func spawn_single_npc(pos: Vector2, npc_name: String):
 	npc.position = pos
 	get_parent().call_deferred("add_child", npc)
 
-func spawn_scattered_items():
-	print("Spawning scattered items...")
+func spawn_item_wave():
+	print("Spawning item wave ", waves_spawned + 1, "/", total_waves)
+	waves_spawned += 1
 	
-	# Create a list of types to ensure one of each
 	var types = [0, 1, 2] # POTION, GUN, MASK
 	types.shuffle()
 	
-	for i in range(PICKUP_COUNT):
-		var item_name = "Pickup_" + str(i)
-		var pos = Vector2(randf_range(-400, 400), randf_range(-300, 300))
+	for i in range(3):
+		var item_name = "Pickup_W" + str(waves_spawned) + "_" + str(i)
 		
-		# Cycle through types if count > 3 (using modulus)
-		var type = types[i % types.size()]
+		# Try to find a non-overlapping position
+		var pos = Vector2.ZERO
+		var valid_pos = false
+		var attempts = 0
 		
-		# Call RPC to spawn on all clients (including server)
-		spawn_item.rpc(pos, item_name, type)
+		while not valid_pos and attempts < 20:
+			pos = Vector2(
+				randf_range(-SPAWN_RANGE_X + 100, SPAWN_RANGE_X - 100),
+				randf_range(-SPAWN_RANGE_Y + 100, SPAWN_RANGE_Y - 100)
+			)
+			valid_pos = true
+			
+			# Check against existing pickups
+			var existing = get_tree().get_nodes_in_group("pickups")
+			for other in existing:
+				if pos.distance_to(other.global_position) < 150.0:
+					valid_pos = false
+					break
+			attempts += 1
+		
+		spawn_item.rpc(pos, item_name, types[i])
 
 @rpc("authority", "call_local")
 func spawn_item(pos: Vector2, item_name: String, item_type: int):
