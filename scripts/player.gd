@@ -22,6 +22,7 @@ var kill_count = 0
 var has_crown = false
 var is_npc = false
 var inventory = []
+var current_mask_type = 0 # 0 = None, 1 = Mask 1, etc.
 
 # Preload textures for UI
 const TEX_POTION = preload("res://assets/Potion.PNG")
@@ -66,6 +67,7 @@ func _ready():
 			hud.visible = false
 
 	update_lives_ui()
+	update_mask_ui()
 
 	if dance_indicator:
 		dance_indicator.visible = false
@@ -92,6 +94,34 @@ func update_lives_ui():
 			
 			# Ensure they are always visible (just swapping textures)
 			hearts[i].visible = true
+
+func update_mask_ui():
+	if not mask_display: return
+	
+	var icon_node = mask_display.get_node_or_null("MaskIcon")
+	if not icon_node: return
+	
+	# Clear previous
+	for child in icon_node.get_children():
+		child.queue_free()
+	
+	# If we have a mask, show it
+	if current_mask_type > 0:
+		var mask_texture = TextureRect.new()
+		mask_texture.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		mask_texture.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		mask_texture.custom_minimum_size = Vector2(70, 70)
+		
+		# For now, just using the golden mask texture as default
+		mask_texture.texture = TEX_MASK
+		
+		mask_texture.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+		
+		# Offset to match inventory style if needed
+		mask_texture.position.x -= 20
+		mask_texture.position.y -= 20
+		
+		icon_node.add_child(mask_texture)
 
 # --- MOVEMENT LOOP ---
 func _physics_process(delta):

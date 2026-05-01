@@ -5,6 +5,7 @@
 [ext_resource type="Texture2D" path="res://assets/heart_full.PNG" id="3_heart_full"]
 [ext_resource type="Texture2D" path="res://assets/heart_empty.PNG" id="4_heart_empty"]
 [ext_resource type="Texture2D" path="res://assets/holder_items.PNG" id="5_holder_items"]
+[ext_resource type="Texture2D" path="res://assets/holder_mask.PNG" id="6_holder_mask"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_4dohe"]
 atlas = ExtResource("2_4dohe")
@@ -222,22 +223,27 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="MaskDisplay" type="Control" parent="HUD" unique_id=2117243664]
-custom_minimum_size = Vector2(-80, 20)
-layout_mode = 3
+[node name="MaskDisplay" type="TextureRect" parent="HUD" unique_id=2117243664]
+custom_minimum_size = Vector2(120, 120)
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -40.0
-offset_bottom = 40.0
+offset_left = -130.0
+offset_top = 5.0
+offset_right = -10.0
+offset_bottom = 125.0
 grow_horizontal = 0
+texture = ExtResource("6_holder_mask")
+expand_mode = 1
+stretch_mode = 5
 
-[node name="TextureRect" type="TextureRect" parent="HUD/MaskDisplay" unique_id=1734432395]
-custom_minimum_size = Vector2(64, 64)
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-texture = SubResource("CameraTexture_4dohe")
+[node name="MaskIcon" type="Control" parent="HUD/MaskDisplay"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="GameOverLayer" type="CanvasLayer" parent="." unique_id=1944903136]
 visible = false
