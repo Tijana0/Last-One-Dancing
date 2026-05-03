@@ -5,8 +5,15 @@ extends CharacterBody2D
 
 # --- KILL SYSTEM PROPERTIES ---
 @export var kill_range = 150.0
-@export var kill_cooldown = 1.0
+@export var kill_cooldown = 1.5 # Increased to give more escape time
 var last_kill_time = 0.0
+
+# --- DAMAGE & INVULNERABILITY ---
+@export var invulnerability_duration = 2.0
+@export var knockback_strength = 500.0
+@export var recoil_strength = 300.0 # New property for attacker recoil
+var is_invulnerable = false
+var knockback_velocity = Vector2.ZERO
 
 # --- DANCE SYSTEM PROPERTIES ---
 @export var dance_range = 150.0
@@ -40,6 +47,7 @@ const TEX_HEART_EMPTY = preload("res://assets/heart_empty.PNG")
 @onready var game_over_layer = $GameOverLayer
 @onready var inventory_container = $HUD/InventoryContainer
 @onready var dance_indicator = $DanceIndicator
+var main_camera: Camera2D = null
 
 # --- SETUP ---
 func _enter_tree():
@@ -73,11 +81,11 @@ func _ready():
 		dance_indicator.visible = false
 
 	if is_multiplayer_authority():
-		var camera = Camera2D.new()
-		add_child(camera)
-		camera.enabled = true
-		camera.position_smoothing_enabled = true
-		camera.make_current()
+		main_camera = Camera2D.new()
+		add_child(main_camera)
+		main_camera.enabled = true
+		main_camera.position_smoothing_enabled = true
+		main_camera.make_current()
 
 	if game_over_layer:
 		game_over_layer.visible = false
@@ -147,7 +155,10 @@ func _physics_process(delta):
 			var push_dir = (global_position - item.global_position).normalized()
 			direction = (direction + push_dir * 0.3).normalized()
 
-	velocity = direction * speed
+	# Apply knockback friction
+	knockback_velocity = knockback_velocity.move_toward(Vector2.ZERO, 1500.0 * delta)
+	
+	velocity = (direction * speed) + knockback_velocity
 	
 	# ANIMATION BASED ON MOVEMENT
 	if animated_sprite and not is_dancing:
@@ -324,46 +335,66 @@ func attempt_kill():
 		
 		if distance < kill_range:
 			print("!!! HIT CONFIRMED on ", target.name, " !!!")
-			# Pass calculated damage
-			target.rpc_id(target.get_multiplayer_authority(), "request_damage", name.to_int(), damage)      
+			
+			# APPLY RECOIL TO SELF (The Attacker)
+			var recoil_dir = (global_position - target.global_position).normalized()
+			knockback_velocity = recoil_dir * recoil_strength
+			
+			# Pass calculated damage and our position for knockback
+			target.rpc_id(target.get_multiplayer_authority(), "request_damage", name.to_int(), damage, global_position)      
 			return
 			
 	print("Failed: No one close enough")
 
 # --- DAMAGE & HEALTH SYNC ---
 @rpc("any_peer", "call_local")
-func request_damage(attacker_id: int, damage_amount: int = 1):
+func request_damage(attacker_id: int, damage_amount: int = 1, attacker_pos: Vector2 = Vector2.ZERO):
 	print("DEBUG: request_damage called on ", name)
 	
 	if not is_multiplayer_authority():
 		print("DEBUG: Ignored (Not Authority)")
 		return
+
+	if is_invulnerable:
+		print("DEBUG: Ignored (Is Invulnerable)")
+		return
+	
+	# Calculate Knockback
+	if attacker_pos != Vector2.ZERO:
+		var knockback_dir = (global_position - attacker_pos).normalized()
+		knockback_velocity = knockback_dir * knockback_strength
+	
+	# Trigger Shake
+	shake_camera(0.3, 10.0)
 	
 	lives -= damage_amount
 	print("DEBUG: ", name, " lives decreased to: ", lives)
 	
 	rpc("sync_lives", lives, attacker_id)
 
+func shake_camera(duration: float, intensity: float):
+	if not main_camera: return
+	
+	var timer = 0.0
+	while timer < duration:
+		var offset = Vector2(randf_range(-intensity, intensity), randf_range(-intensity, intensity))
+		main_camera.offset = offset
+		await get_tree().create_timer(0.02).timeout
+		timer += 0.02
+	
+	main_camera.offset = Vector2.ZERO
+
 @rpc("authority", "call_local")
 func sync_lives(new_lives: int, killer_id: int):
 	print("DEBUG: sync_lives - ", name, " now has ", new_lives, " lives")
+	
+	var was_damaged = new_lives < lives
 	lives = new_lives
 	update_lives_ui()
 
 	if lives > 0:
-		# Respawn
-		var screen_size = get_viewport_rect().size
-		global_position = Vector2(
-			randf_range(50, screen_size.x - 50), 
-			randf_range(50, screen_size.y - 50)
-		)
-		
-		# Flash effect
-		if animated_sprite:
-			animated_sprite.modulate.a = 0.3
-			await get_tree().create_timer(0.5).timeout
-			if lives > 0:
-				animated_sprite.modulate.a = 1.0
+		if was_damaged:
+			start_invulnerability()
 	else:
 		# Death
 		print(name, " ELIMINATED!")
@@ -387,6 +418,25 @@ func sync_lives(new_lives: int, killer_id: int):
 			# A regular player died. Check if it's time to spawn the Boss.
 			if game_manager and multiplayer.is_server():
 				game_manager.check_survivors()
+
+func start_invulnerability():
+	is_invulnerable = true
+	
+	# Visual flicker loop
+	var flicker_count = 10
+	var interval = invulnerability_duration / (flicker_count * 2)
+	
+	for i in range(flicker_count):
+		if animated_sprite:
+			animated_sprite.modulate.a = 0.3
+		await get_tree().create_timer(interval).timeout
+		if animated_sprite:
+			animated_sprite.modulate.a = 1.0
+		await get_tree().create_timer(interval).timeout
+	
+	is_invulnerable = false
+	if animated_sprite:
+		animated_sprite.modulate.a = 1.0
 
 func show_lose_screen(killer_id: int):
 	# Find killer name
@@ -529,11 +579,11 @@ func update_inventory_ui():
 			if type == 0: # POTION
 				offset_y = -60 
 			elif type == 1: # GUN
-				offset_x = -40 # Bit more to the right
-				offset_y = -40 # Bit more down
+				offset_x = -40
+				offset_y = -40
 			elif type == 2: # MASK
-				offset_x = -35 # Bit more to the left
-				offset_y = -35 # Even more down
+				offset_x = -35 
+				offset_y = -35
 			
 			item_texture.position.x += offset_x
 			item_texture.position.y += offset_y
