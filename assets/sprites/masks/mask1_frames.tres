@@ -1,0 +1,199 @@
+[gd_resource type="SpriteFrames" format=3]
+
+[ext_resource type="Texture2D" path="res://assets/sprites/masks/spritesheet_mask1_walk_front.png" id="1_wf"]
+[ext_resource type="Texture2D" path="res://assets/sprites/masks/spritesheet_mask1_walk_side.png" id="2_ws"]
+[ext_resource type="Texture2D" path="res://assets/sprites/masks/spritesheet_mask1_kill.png" id="3_kill"]
+
+[sub_resource type="AtlasTexture" id="wf_0"]
+atlas = ExtResource("1_wf")
+region = Rect2(0, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="wf_1"]
+atlas = ExtResource("1_wf")
+region = Rect2(100, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="wf_2"]
+atlas = ExtResource("1_wf")
+region = Rect2(200, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="wf_3"]
+atlas = ExtResource("1_wf")
+region = Rect2(300, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="wf_4"]
+atlas = ExtResource("1_wf")
+region = Rect2(400, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="wf_5"]
+atlas = ExtResource("1_wf")
+region = Rect2(500, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="ws_0"]
+atlas = ExtResource("2_ws")
+region = Rect2(0, 0, 150, 250)
+
+[sub_resource type="AtlasTexture" id="ws_1"]
+atlas = ExtResource("2_ws")
+region = Rect2(150, 0, 150, 250)
+
+[sub_resource type="AtlasTexture" id="ws_2"]
+atlas = ExtResource("2_ws")
+region = Rect2(300, 0, 150, 250)
+
+[sub_resource type="AtlasTexture" id="ws_3"]
+atlas = ExtResource("2_ws")
+region = Rect2(450, 0, 150, 250)
+
+[sub_resource type="AtlasTexture" id="kill_0"]
+atlas = ExtResource("3_kill")
+region = Rect2(0, 0, 50, 250)
+
+[sub_resource type="AtlasTexture" id="kill_1"]
+atlas = ExtResource("3_kill")
+region = Rect2(50, 0, 50, 250)
+
+[sub_resource type="AtlasTexture" id="kill_2"]
+atlas = ExtResource("3_kill")
+region = Rect2(100, 0, 50, 250)
+
+[sub_resource type="AtlasTexture" id="kill_3"]
+atlas = ExtResource("3_kill")
+region = Rect2(150, 0, 50, 250)
+
+[sub_resource type="AtlasTexture" id="kill_4"]
+atlas = ExtResource("3_kill")
+region = Rect2(200, 0, 50, 250)
+
+[sub_resource type="AtlasTexture" id="kill_5"]
+atlas = ExtResource("3_kill")
+region = Rect2(250, 0, 50, 250)
+
+[sub_resource type="AtlasTexture" id="kill_6"]
+atlas = ExtResource("3_kill")
+region = Rect2(300, 0, 50, 250)
+
+[sub_resource type="AtlasTexture" id="kill_7"]
+atlas = ExtResource("3_kill")
+region = Rect2(350, 0, 50, 250)
+
+[sub_resource type="AtlasTexture" id="kill_8"]
+atlas = ExtResource("3_kill")
+region = Rect2(400, 0, 50, 250)
+
+[sub_resource type="AtlasTexture" id="kill_9"]
+atlas = ExtResource("3_kill")
+region = Rect2(450, 0, 50, 250)
+
+[sub_resource type="AtlasTexture" id="kill_10"]
+atlas = ExtResource("3_kill")
+region = Rect2(500, 0, 50, 250)
+
+[sub_resource type="AtlasTexture" id="kill_11"]
+atlas = ExtResource("3_kill")
+region = Rect2(550, 0, 50, 250)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("wf_0")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("wf_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("wf_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("wf_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("wf_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("wf_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("wf_5")
+}],
+"loop": true,
+"name": &"walk_front",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("ws_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("ws_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("ws_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("ws_3")
+}],
+"loop": true,
+"name": &"walk_side",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("kill_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("kill_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("kill_2")
+}, {
+"duration": 1.0,
+"texture": SubResource("kill_3")
+}, {
+"duration": 1.0,
+"texture": SubResource("kill_4")
+}, {
+"duration": 1.0,
+"texture": SubResource("kill_5")
+}, {
+"duration": 1.0,
+"texture": SubResource("kill_6")
+}, {
+"duration": 1.0,
+"texture": SubResource("kill_7")
+}, {
+"duration": 1.0,
+"texture": SubResource("kill_8")
+}, {
+"duration": 1.0,
+"texture": SubResource("kill_9")
+}, {
+"duration": 1.0,
+"texture": SubResource("kill_10")
+}, {
+"duration": 1.0,
+"texture": SubResource("kill_11")
+}],
+"loop": false,
+"name": &"kill",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("wf_0")
+}, {
+"duration": 1.0,
+"texture": SubResource("wf_1")
+}, {
+"duration": 1.0,
+"texture": SubResource("wf_2")
+}],
+"loop": true,
+"name": &"dance",
+"speed": 8.0
+}]

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" path="res://scripts/npc.gd" id="1_1ov3m"]
 [ext_resource type="Texture2D" uid="uid://si5mmnxoe7lj" path="res://icon.svg" id="2_cuwdc"]
+[ext_resource type="SpriteFrames" path="res://assets/sprites/masks/mask1_frames.tres" id="3_SF_npc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1ov3m"]
 size = Vector2(128, 130)
@@ -11,6 +12,11 @@ script = ExtResource("1_1ov3m")
 
 [node name="Body" type="Sprite2D" parent="." unique_id=2110009695]
 texture = ExtResource("2_cuwdc")
+visible = false
+
+[node name="AnimatedSprite" type="AnimatedSprite2D" parent="." unique_id=600000001]
+sprite_frames = ExtResource("3_SF_npc")
+animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=148613396]
 position = Vector2(-1, 0)

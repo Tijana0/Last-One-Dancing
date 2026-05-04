@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dmoat1fn3uwa2"
-path="res://.godot/imported/spritesheet_mask5_kill.png-5c668a988b334ff627d4e46315c2e63e.ctex"
+uid="uid://bb4n76edmtmjw"
+path="res://.godot/imported/spritesheet_mask2_walk_front.png-8277de822e60f6a56f560d823b417e1d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/spritesheet_mask5_kill.png"
-dest_files=["res://.godot/imported/spritesheet_mask5_kill.png-5c668a988b334ff627d4e46315c2e63e.ctex"]
+source_file="res://assets/sprites/masks/spritesheet_mask2_walk_front.png"
+dest_files=["res://.godot/imported/spritesheet_mask2_walk_front.png-8277de822e60f6a56f560d823b417e1d.ctex"]
 
 [params]
 

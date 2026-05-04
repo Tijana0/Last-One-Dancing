@@ -1,71 +1,11 @@
 [gd_scene format=3 uid="uid://c6bjpr7x3e3cd"]
 
 [ext_resource type="Script" uid="uid://dq8qjcxgaed2p" path="res://scripts/player.gd" id="1_g2els"]
-[ext_resource type="Texture2D" uid="uid://dcf21qql7jrat" path="res://assets/spritesheet_test.png" id="2_4dohe"]
+[ext_resource type="SpriteFrames" path="res://assets/sprites/masks/mask1_frames.tres" id="2_SF_default"]
 [ext_resource type="Texture2D" path="res://assets/heart_full.PNG" id="3_heart_full"]
 [ext_resource type="Texture2D" path="res://assets/heart_empty.PNG" id="4_heart_empty"]
 [ext_resource type="Texture2D" path="res://assets/holder_items.PNG" id="5_holder_items"]
 [ext_resource type="Texture2D" path="res://assets/holder_mask.PNG" id="6_holder_mask"]
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_4dohe"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(0, 0, 62, 94)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_r66lb"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(62, 0, 62, 94)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_1txc5"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(124, 0, 62, 94)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_ht1c8"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(0, 0, 62, 94)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_g2jcq"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(0, 0, 62, 94)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_u51tk"]
-atlas = ExtResource("2_4dohe")
-region = Rect2(62, 0, 62, 94)
-
-[sub_resource type="SpriteFrames" id="SpriteFrames_kbsxf"]
-animations = [{
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_4dohe")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_r66lb")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_1txc5")
-}],
-"loop": true,
-"name": &"dance",
-"speed": 8.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_ht1c8")
-}],
-"loop": true,
-"name": &"idle",
-"speed": 5.0
-}, {
-"frames": [{
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_g2jcq")
-}, {
-"duration": 1.0,
-"texture": SubResource("AtlasTexture_u51tk")
-}],
-"loop": true,
-"name": &"walk",
-"speed": 10.0
-}]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_g2els"]
 size = Vector2(126, 127)
@@ -79,7 +19,7 @@ radius = 55.00909
 script = ExtResource("1_g2els")
 
 [node name="AnimatedSprite" type="AnimatedSprite2D" parent="." unique_id=346003072]
-sprite_frames = SubResource("SpriteFrames_kbsxf")
+sprite_frames = ExtResource("2_SF_default")
 animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=979406219]

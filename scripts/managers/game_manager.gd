@@ -51,22 +51,24 @@ func spawn_npcs():
 		return
 
 	print("Spawning ", NPC_COUNT, " NPCs...")
-	
+
 	for i in range(NPC_COUNT):
 		# Randomize position within boundaries
 		var random_x = randf_range(-SPAWN_RANGE_X + 50, SPAWN_RANGE_X - 50)
 		var random_y = randf_range(-SPAWN_RANGE_Y + 50, SPAWN_RANGE_Y - 50)
 		var pos = Vector2(random_x, random_y)
 		var npc_name = "NPC_" + str(i)
-		
+		var mask = randi_range(1, 5)  # server picks mask, passes to all clients
+
 		# Call RPC to spawn on all clients
-		spawn_single_npc.rpc(pos, npc_name)
+		spawn_single_npc.rpc(pos, npc_name, mask)
 
 @rpc("authority", "call_local")
-func spawn_single_npc(pos: Vector2, npc_name: String):
+func spawn_single_npc(pos: Vector2, npc_name: String, mask: int = 1):
 	var npc = NPC_SCENE.instantiate()
 	npc.name = npc_name
 	npc.position = pos
+	npc.mask_index = mask
 	get_parent().call_deferred("add_child", npc)
 
 func spawn_item_wave():
@@ -169,7 +171,8 @@ func spawn_crown_npc():
 	npc.lives = 1
 	npc.has_crown = true
 	npc.player_name = "THE BOSS"
-	
+	npc.mask_index = randi_range(1, 5)
+
 	# Add to scene
 	get_parent().add_child(npc, true)
 	

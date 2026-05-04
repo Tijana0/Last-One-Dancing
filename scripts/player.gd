@@ -2,6 +2,7 @@ extends CharacterBody2D
 
 # --- PROPERTIES ---
 @export var speed = 300.0
+@export var mask_index: int = 1  # 1–5 selects which mask sprite set; 0 keeps scene default
 
 # --- KILL SYSTEM PROPERTIES ---
 @export var kill_range = 150.0
@@ -14,6 +15,9 @@ var last_kill_time = 0.0
 @export var recoil_strength = 300.0 # New property for attacker recoil
 var is_invulnerable = false
 var knockback_velocity = Vector2.ZERO
+
+# --- KILL ANIMATION ---
+var is_killing: bool = false
 
 # --- DANCE SYSTEM PROPERTIES ---
 @export var dance_range = 150.0
@@ -30,6 +34,16 @@ var has_crown = false
 var is_npc = false
 var inventory = []
 var current_mask_type = 0 # 0 = None, 1 = Mask 1, etc.
+
+# SpriteFrames resources for each mask (index matches mask_index 1–5)
+const MASK_FRAMES: Array = [
+	null,  # index 0: no mask, keeps the scene default
+	preload("res://assets/sprites/masks/mask1_frames.tres"),
+	preload("res://assets/sprites/masks/mask2_frames.tres"),
+	preload("res://assets/sprites/masks/mask3_frames.tres"),
+	preload("res://assets/sprites/masks/mask4_frames.tres"),
+	preload("res://assets/sprites/masks/mask5_frames.tres"),
+]
 
 # Preload textures for UI
 const TEX_POTION = preload("res://assets/Potion.PNG")
@@ -60,8 +74,10 @@ func _enter_tree():
 func _ready():
 	print("PLAYER READY (Lives: ", lives, ") - ", player_name)
 
-	# Random color for each player
+	# Load mask-specific SpriteFrames and set initial animation
 	if animated_sprite:
+		if mask_index >= 1 and mask_index <= 5:
+			animated_sprite.sprite_frames = MASK_FRAMES[mask_index]
 		animated_sprite.modulate = Color(randf(), randf(), randf())
 		animated_sprite.play("idle")
 
@@ -144,6 +160,12 @@ func _physics_process(delta):
 		velocity = Vector2.ZERO
 		move_and_slide()
 		return
+
+	# Block input while kill animation plays
+	if is_killing:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
 	
 	# Movement
 	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
@@ -160,11 +182,18 @@ func _physics_process(delta):
 	
 	velocity = (direction * speed) + knockback_velocity
 	
-	# ANIMATION BASED ON MOVEMENT
-	if animated_sprite and not is_dancing:
+	# ANIMATION BASED ON MOVEMENT DIRECTION
+	if animated_sprite and not is_dancing and not is_killing:
 		if velocity.length() > 0:
-			if animated_sprite.animation != "walk":
-				animated_sprite.play("walk")
+			var norm = velocity.normalized()
+			if abs(norm.x) > abs(norm.y):
+				animated_sprite.flip_h = norm.x < 0
+				if animated_sprite.animation != "walk_side":
+					animated_sprite.play("walk_side")
+			else:
+				animated_sprite.flip_h = false
+				if animated_sprite.animation != "walk_front":
+					animated_sprite.play("walk_front")
 		else:
 			if animated_sprite.animation != "idle":
 				animated_sprite.play("idle")
@@ -296,6 +325,16 @@ func end_dance():
 		animated_sprite.play("idle")
 		animated_sprite.modulate = Color(randf(), randf(), randf())
 
+func play_kill_animation() -> void:
+	if not animated_sprite:
+		return
+	is_killing = true
+	animated_sprite.play("kill")
+	await animated_sprite.animation_finished
+	is_killing = false
+	if animated_sprite and animated_sprite.animation != "idle":
+		animated_sprite.play("idle")
+
 # --- KILL SYSTEM ---
 func attempt_kill():
 	print("--- ATTEMPTING KILL ---")
@@ -335,13 +374,16 @@ func attempt_kill():
 		
 		if distance < kill_range:
 			print("!!! HIT CONFIRMED on ", target.name, " !!!")
-			
+
 			# APPLY RECOIL TO SELF (The Attacker)
 			var recoil_dir = (global_position - target.global_position).normalized()
 			knockback_velocity = recoil_dir * recoil_strength
-			
+
+			# Play kill animation locally (fire-and-forget coroutine)
+			play_kill_animation()
+
 			# Pass calculated damage and our position for knockback
-			target.rpc_id(target.get_multiplayer_authority(), "request_damage", name.to_int(), damage, global_position)      
+			target.rpc_id(target.get_multiplayer_authority(), "request_damage", name.to_int(), damage, global_position)
 			return
 			
 	print("Failed: No one close enough")
@@ -398,20 +440,27 @@ func sync_lives(new_lives: int, killer_id: int):
 	else:
 		# Death
 		print(name, " ELIMINATED!")
-		
-		visible = false
+
 		$CollisionShape2D.set_deferred("disabled", true)
 		set_physics_process(false)
-		
+
+		# Play kill animation before hiding
+		if animated_sprite and animated_sprite.sprite_frames \
+				and animated_sprite.sprite_frames.has_animation("kill"):
+			animated_sprite.play("kill")
+			await animated_sprite.animation_finished
+
+		visible = false
+
 		# SHOW LOSE SCREEN instead of game_over_layer
 		if is_multiplayer_authority() and not is_npc:
 			show_lose_screen(killer_id)
-		
+
 		remove_from_group("players")
-		
+
 		# --- CHECK GAME STATE ---
 		var game_manager = get_tree().current_scene.get_node_or_null("GameManager")
-		
+
 		if has_crown:
 			become_crown_pickup()
 		else:
