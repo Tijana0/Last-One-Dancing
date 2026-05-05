@@ -79,7 +79,6 @@ func _ready():
 	if animated_sprite:
 		if mask_index >= 1 and mask_index <= 5:
 			animated_sprite.sprite_frames = MASK_FRAMES[mask_index]
-		animated_sprite.modulate = Color(randf(), randf(), randf())
 		animated_sprite.play("idle")
 
 	add_to_group("players")
@@ -319,10 +318,8 @@ func end_dance():
 	if dance_indicator:
 		dance_indicator.visible = false
 	
-	# Back to idle and random color
 	if animated_sprite:
 		animated_sprite.play("idle")
-		animated_sprite.modulate = Color(randf(), randf(), randf())
 
 func get_walk_anim(norm: Vector2) -> String:
 	if abs(norm.x) > abs(norm.y):

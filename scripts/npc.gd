@@ -33,7 +33,6 @@ func _ready():
 
 	if animated_sprite and mask_index >= 1 and mask_index <= 5:
 		animated_sprite.sprite_frames = MASK_FRAMES[mask_index]
-		animated_sprite.modulate = Color(randf(), randf(), randf())
 		animated_sprite.play("idle")
 
 	add_to_group("npcs")
@@ -109,8 +108,6 @@ func end_forced_dance():
 	is_dancing = false
 	time_until_change = 0  # Force new decision immediately
 
-	if animated_sprite:
-		animated_sprite.modulate = Color(randf(), randf(), randf())
 
 # --- DAMAGE & DEATH ---
 @rpc("any_peer", "call_local")
