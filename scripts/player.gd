@@ -18,6 +18,7 @@ var knockback_velocity = Vector2.ZERO
 
 # --- KILL ANIMATION ---
 var is_killing: bool = false
+var last_facing: Vector2 = Vector2.DOWN
 
 # --- DANCE SYSTEM PROPERTIES ---
 @export var dance_range = 150.0
@@ -186,15 +187,16 @@ func _physics_process(delta):
 	if animated_sprite and not is_dancing and not is_killing:
 		if velocity.length() > 0:
 			var norm = velocity.normalized()
-			if abs(norm.x) > abs(norm.y):
-				animated_sprite.flip_h = norm.x < 0
-				if animated_sprite.animation != "walk_side":
-					animated_sprite.play("walk_side")
+			last_facing = norm
+			var anim = get_walk_anim(norm)
+			if mask_index >= 3:
+				animated_sprite.flip_h = (anim == "walk_side" and norm.x < 0)
 			else:
 				animated_sprite.flip_h = false
-				if animated_sprite.animation != "walk_front":
-					animated_sprite.play("walk_front")
+			if animated_sprite.animation != anim:
+				animated_sprite.play(anim)
 		else:
+			animated_sprite.flip_h = false
 			if animated_sprite.animation != "idle":
 				animated_sprite.play("idle")
 	
@@ -325,11 +327,36 @@ func end_dance():
 		animated_sprite.play("idle")
 		animated_sprite.modulate = Color(randf(), randf(), randf())
 
+func get_walk_anim(norm: Vector2) -> String:
+	if mask_index == 1 or mask_index == 2:
+		if abs(norm.x) > abs(norm.y):
+			return "walk_right" if norm.x > 0 else "walk_left"
+		elif norm.y < 0 and mask_index == 1:
+			return "walk_back"
+		else:
+			return "walk_front"
+	else:
+		if abs(norm.x) > abs(norm.y):
+			return "walk_side"
+		else:
+			return "walk_front"
+
+func get_kill_anim() -> String:
+	if mask_index == 1:
+		if abs(last_facing.x) > abs(last_facing.y):
+			return "kill_right" if last_facing.x > 0 else "kill_left"
+		elif last_facing.y < 0:
+			return "kill_back"
+		else:
+			return "kill_front"
+	else:
+		return "kill"
+
 func play_kill_animation() -> void:
 	if not animated_sprite:
 		return
 	is_killing = true
-	animated_sprite.play("kill")
+	animated_sprite.play(get_kill_anim())
 	await animated_sprite.animation_finished
 	is_killing = false
 	if animated_sprite and animated_sprite.animation != "idle":
@@ -445,10 +472,11 @@ func sync_lives(new_lives: int, killer_id: int):
 		set_physics_process(false)
 
 		# Play kill animation before hiding
-		if animated_sprite and animated_sprite.sprite_frames \
-				and animated_sprite.sprite_frames.has_animation("kill"):
-			animated_sprite.play("kill")
-			await animated_sprite.animation_finished
+		if animated_sprite and animated_sprite.sprite_frames:
+			var kanim = get_kill_anim()
+			if animated_sprite.sprite_frames.has_animation(kanim):
+				animated_sprite.play(kanim)
+				await animated_sprite.animation_finished
 
 		visible = false
 

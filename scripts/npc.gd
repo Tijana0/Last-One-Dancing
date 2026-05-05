@@ -22,6 +22,7 @@ var time_until_change = 0.0
 var is_dancing = false
 var forced_dance = false
 var is_dying = false
+var last_facing: Vector2 = Vector2.DOWN
 
 @onready var sprite = $Body
 @onready var animated_sprite = $AnimatedSprite
@@ -73,15 +74,16 @@ func _physics_process(delta):
 		if animated_sprite:
 			if velocity.length() > 0:
 				var norm = move_direction.normalized()
-				if abs(norm.x) > abs(norm.y):
-					animated_sprite.flip_h = norm.x < 0
-					if animated_sprite.animation != "walk_side":
-						animated_sprite.play("walk_side")
+				last_facing = norm
+				var anim = get_walk_anim(norm)
+				if mask_index >= 3:
+					animated_sprite.flip_h = (anim == "walk_side" and norm.x < 0)
 				else:
 					animated_sprite.flip_h = false
-					if animated_sprite.animation != "walk_front":
-						animated_sprite.play("walk_front")
+				if animated_sprite.animation != anim:
+					animated_sprite.play(anim)
 			else:
+				animated_sprite.flip_h = false
 				if animated_sprite.animation != "idle":
 					animated_sprite.play("idle")
 	else:
@@ -129,10 +131,11 @@ func die_rpc():
 	remove_from_group("npcs")
 	$CollisionShape2D.set_deferred("disabled", true)
 
-	if animated_sprite and animated_sprite.sprite_frames \
-			and animated_sprite.sprite_frames.has_animation("kill"):
-		animated_sprite.play("kill")
-		await animated_sprite.animation_finished
+	if animated_sprite and animated_sprite.sprite_frames:
+		var kanim = get_kill_anim()
+		if animated_sprite.sprite_frames.has_animation(kanim):
+			animated_sprite.play(kanim)
+			await animated_sprite.animation_finished
 
 	queue_free()
 
@@ -152,6 +155,31 @@ func decide_next_move():
 		time_until_change = randf_range(1.0, wander_time)
 		var angle = randf() * TAU  # TAU is 2*PI (360 degrees)
 		move_direction = Vector2(cos(angle), sin(angle))
+
+func get_walk_anim(norm: Vector2) -> String:
+	if mask_index == 1 or mask_index == 2:
+		if abs(norm.x) > abs(norm.y):
+			return "walk_right" if norm.x > 0 else "walk_left"
+		elif norm.y < 0 and mask_index == 1:
+			return "walk_back"
+		else:
+			return "walk_front"
+	else:
+		if abs(norm.x) > abs(norm.y):
+			return "walk_side"
+		else:
+			return "walk_front"
+
+func get_kill_anim() -> String:
+	if mask_index == 1:
+		if abs(last_facing.x) > abs(last_facing.y):
+			return "kill_right" if last_facing.x > 0 else "kill_left"
+		elif last_facing.y < 0:
+			return "kill_back"
+		else:
+			return "kill_front"
+	else:
+		return "kill"
 
 # --- NETWORK SYNC ---
 func _process(delta):
