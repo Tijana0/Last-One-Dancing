@@ -157,18 +157,21 @@ func decide_next_move():
 		move_direction = Vector2(cos(angle), sin(angle))
 
 func get_walk_anim(norm: Vector2) -> String:
-	if mask_index == 1 or mask_index == 2:
-		if abs(norm.x) > abs(norm.y):
-			return "walk_right" if norm.x > 0 else "walk_left"
-		elif norm.y < 0 and mask_index == 1:
-			return "walk_back"
-		else:
-			return "walk_front"
-	else:
-		if abs(norm.x) > abs(norm.y):
-			return "walk_side"
-		else:
-			return "walk_front"
+	match mask_index:
+		1, 2:
+			if abs(norm.x) > abs(norm.y):
+				return "walk_right" if norm.x > 0 else "walk_left"
+			elif norm.y < 0 and mask_index == 1:
+				return "walk_back"
+			else:
+				return "walk_front"
+		3, 4, 5:
+			if abs(norm.x) > abs(norm.y):
+				return "walk_side"
+			else:
+				return "walk_front"
+		_:
+			return "idle"
 
 func get_kill_anim() -> String:
 	if mask_index == 1:
