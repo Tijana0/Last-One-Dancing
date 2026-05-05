@@ -189,10 +189,7 @@ func _physics_process(delta):
 			var norm = velocity.normalized()
 			last_facing = norm
 			var anim = get_walk_anim(norm)
-			if mask_index >= 3:
-				animated_sprite.flip_h = (anim == "walk_side" and norm.x < 0)
-			else:
-				animated_sprite.flip_h = false
+			animated_sprite.flip_h = false
 			if animated_sprite.animation != anim:
 				animated_sprite.play(anim)
 		else:
@@ -328,32 +325,20 @@ func end_dance():
 		animated_sprite.modulate = Color(randf(), randf(), randf())
 
 func get_walk_anim(norm: Vector2) -> String:
-	match mask_index:
-		1, 2:
-			if abs(norm.x) > abs(norm.y):
-				return "walk_right" if norm.x > 0 else "walk_left"
-			elif norm.y < 0 and mask_index == 1:
-				return "walk_back"
-			else:
-				return "walk_front"
-		3, 4, 5:
-			if abs(norm.x) > abs(norm.y):
-				return "walk_side"
-			else:
-				return "walk_front"
-		_:
-			return "idle"
+	if abs(norm.x) > abs(norm.y):
+		return "walk_right" if norm.x > 0 else "walk_left"
+	elif norm.y < 0:
+		return "walk_back"
+	else:
+		return "walk_front"
 
 func get_kill_anim() -> String:
-	if mask_index == 1:
-		if abs(last_facing.x) > abs(last_facing.y):
-			return "kill_right" if last_facing.x > 0 else "kill_left"
-		elif last_facing.y < 0:
-			return "kill_back"
-		else:
-			return "kill_front"
+	if abs(last_facing.x) > abs(last_facing.y):
+		return "kill_right" if last_facing.x > 0 else "kill_left"
+	elif last_facing.y < 0:
+		return "kill_back"
 	else:
-		return "kill"
+		return "kill_front"
 
 func play_kill_animation() -> void:
 	if not animated_sprite:
