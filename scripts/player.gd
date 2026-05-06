@@ -96,7 +96,7 @@ func _ready():
 	if dance_indicator:
 		dance_indicator.visible = false
 
-	if is_multiplayer_authority():
+	if is_multiplayer_authority() and not is_npc:
 		main_camera = Camera2D.new()
 		add_child(main_camera)
 		main_camera.enabled = true
