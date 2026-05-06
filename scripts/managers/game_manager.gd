@@ -201,8 +201,9 @@ func spawn_crown_npc():
 	var label = Label.new()
 	label.text = "THE BOSS IS HERE!"
 	label.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	label.texture_filter = Control.TEXTURE_FILTER_NEAREST
 	label.add_theme_font_size_override("font_size", 64)
-	label.add_theme_color_override("font_color", Color(1, 0, 0)) # Red text
+	label.add_theme_color_override("font_color", Color(1, 1, 1)) # White text
 	label.add_theme_color_override("font_outline_color", Color(0, 0, 0))
 	label.add_theme_constant_override("outline_size", 8)
 	canvas.add_child(label)
