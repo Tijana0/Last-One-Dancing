@@ -60,7 +60,9 @@ func spawn_npcs():
 		var random_y = randf_range(SPAWN_MIN_Y + 50, SPAWN_MAX_Y - 50)
 		var pos = Vector2(random_x, random_y)
 		var npc_name = "NPC_" + str(i)
-		var mask = randi_range(1, 5)  # server picks mask, passes to all clients
+		# Skipping mask 2 due to animation issues
+		var available_masks = [1, 3, 4, 5]
+		var mask = available_masks[randi() % available_masks.size()]
 
 		# Call RPC to spawn on all clients
 		spawn_single_npc.rpc(pos, npc_name, mask)
@@ -173,7 +175,10 @@ func spawn_crown_npc():
 	npc.lives = 1
 	npc.has_crown = true
 	npc.player_name = "THE BOSS"
-	npc.mask_index = randi_range(1, 5)
+	
+	# Skipping mask 2 due to animation issues
+	var boss_masks = [1, 3, 4, 5]
+	npc.mask_index = boss_masks[randi() % boss_masks.size()]
 
 	# Add to scene
 	get_parent().add_child(npc, true)
