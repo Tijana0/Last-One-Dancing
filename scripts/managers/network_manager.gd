@@ -113,7 +113,7 @@ func spawn_player(id: int, pname: String):
 	player.set_multiplayer_authority(id)
 	
 	# Random spawn position
-	player.position = Vector2(randf_range(-400, 400), randf_range(-300, 300))
+	player.position = Vector2(randf_range(-400, 400), randf_range(-100, 700))
 	
 	print("Spawning player: ", pname, " (ID: ", id, ") at ", player.position)
 	get_tree().current_scene.add_child(player, true)  # true = force readable name

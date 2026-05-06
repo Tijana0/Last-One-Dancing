@@ -4,8 +4,8 @@ extends Node
 const KILLS_TO_WIN = 999 
 const SPAWN_MIN_X = -1000.0
 const SPAWN_MAX_X = 1000.0
-const SPAWN_MIN_Y = -300.0
-const SPAWN_MAX_Y = 700.0
+const SPAWN_MIN_Y = -100.0
+const SPAWN_MAX_Y = 900.0
 
 # NPC Settings (from feat-npc-ai)
 const NPC_SCENE = preload("res://prefabs/npc.tscn")

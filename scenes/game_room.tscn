@@ -51,6 +51,7 @@ stream = ExtResource("3_mt38u")
 autoplay = true
 
 [node name="Boundaries" type="Node2D" parent="." unique_id=1007976909]
+position = Vector2(0, 220)
 
 [node name="Wall_Top" type="StaticBody2D" parent="Boundaries" unique_id=770363895]
 position = Vector2(0, -1000)
