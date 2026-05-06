@@ -30,27 +30,27 @@ region = Rect2(500, 0, 100, 250)
 
 [sub_resource type="AtlasTexture" id="ws_0"]
 atlas = ExtResource("2_ws")
-region = Rect2(0, 0, 100, 250)
+region = Rect2(0, 0, 75, 250)
 
 [sub_resource type="AtlasTexture" id="ws_1"]
 atlas = ExtResource("2_ws")
-region = Rect2(100, 0, 100, 250)
+region = Rect2(75, 0, 75, 250)
 
 [sub_resource type="AtlasTexture" id="ws_2"]
 atlas = ExtResource("2_ws")
-region = Rect2(200, 0, 100, 250)
+region = Rect2(150, 0, 75, 250)
 
 [sub_resource type="AtlasTexture" id="ws_3"]
 atlas = ExtResource("2_ws")
-region = Rect2(300, 0, 100, 250)
+region = Rect2(225, 0, 75, 250)
 
 [sub_resource type="AtlasTexture" id="ws_4"]
 atlas = ExtResource("2_ws")
-region = Rect2(400, 0, 100, 250)
+region = Rect2(300, 0, 75, 250)
 
 [sub_resource type="AtlasTexture" id="ws_5"]
 atlas = ExtResource("2_ws")
-region = Rect2(500, 0, 100, 250)
+region = Rect2(375, 0, 75, 250)
 
 [sub_resource type="AtlasTexture" id="kill_0"]
 atlas = ExtResource("3_kill")
@@ -248,10 +248,10 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("ws_2")
+"texture": SubResource("ws_5")
 }, {
 "duration": 1.0,
-"texture": SubResource("ws_3")
+"texture": SubResource("ws_4")
 }],
 "loop": true,
 "name": &"walk_left",
@@ -259,10 +259,10 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("ws_0")
+"texture": SubResource("ws_2")
 }, {
 "duration": 1.0,
-"texture": SubResource("ws_1")
+"texture": SubResource("ws_3")
 }],
 "loop": true,
 "name": &"walk_right",
