@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://cnjiq2f0egggo" path="res://scripts/game_room.gd" id="1_2xdb1"]
 [ext_resource type="PackedScene" uid="uid://ddawre7n71bdm" path="res://scenes/game_manager.tscn" id="1_gm"]
 [ext_resource type="AudioStream" uid="uid://drim102ofdaqu" path="res://assets/game-audio.mp3" id="3_mt38u"]
+[ext_resource type="Texture2D" uid="uid://bcnqmqbokwtmt" path="res://assets/background.png" id="4_m8b6p"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
 size = Vector2(2500, 20)
@@ -20,7 +21,7 @@ size = Vector2(20, 2000)
 script = ExtResource("1_2xdb1")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=975775729]
-custom_minimum_size = Vector2(2500, 2000)
+custom_minimum_size = Vector2(2450, 1650)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -39,28 +40,48 @@ spawn_path = NodePath("..")
 stream = ExtResource("3_mt38u")
 autoplay = true
 
-[node name="Boundaries" type="Node2D" parent="."]
+[node name="Boundaries" type="Node2D" parent="." unique_id=1007976909]
 
-[node name="Wall_Top" type="StaticBody2D" parent="Boundaries"]
+[node name="Wall_Top" type="StaticBody2D" parent="Boundaries" unique_id=770363895]
 position = Vector2(0, -1000)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Top"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Top" unique_id=705378771]
+position = Vector2(0, 650)
 shape = SubResource("RectangleShape2D_top")
 
-[node name="Wall_Bottom" type="StaticBody2D" parent="Boundaries"]
+[node name="Wall_Bottom" type="StaticBody2D" parent="Boundaries" unique_id=1207774432]
 position = Vector2(0, 1000)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Bottom"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Bottom" unique_id=1005383612]
+position = Vector2(0, -210)
 shape = SubResource("RectangleShape2D_bottom")
 
-[node name="Wall_Left" type="StaticBody2D" parent="Boundaries"]
+[node name="Wall_Left" type="StaticBody2D" parent="Boundaries" unique_id=1525688946]
 position = Vector2(-1250, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Left"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Left" unique_id=2071103747]
+position = Vector2(200, 0)
+rotation = 0.49741885
 shape = SubResource("RectangleShape2D_left")
 
-[node name="Wall_Right" type="StaticBody2D" parent="Boundaries"]
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Boundaries/Wall_Left" unique_id=115550526]
+position = Vector2(50, 550)
+scale = Vector2(0.27, 0.27)
+shape = SubResource("RectangleShape2D_left")
+
+[node name="Wall_Right" type="StaticBody2D" parent="Boundaries" unique_id=226969907]
 position = Vector2(1250, 0)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Right"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Boundaries/Wall_Right" unique_id=82998507]
+position = Vector2(-200, 0)
+rotation = -0.49741885
 shape = SubResource("RectangleShape2D_right")
+
+[node name="CollisionShape2D2" type="CollisionShape2D" parent="Boundaries/Wall_Right" unique_id=2042085348]
+position = Vector2(-30, 550)
+scale = Vector2(0.27, 0.27)
+shape = SubResource("RectangleShape2D_left")
+
+[node name="Background" type="Sprite2D" parent="." unique_id=913476706]
+scale = Vector2(2.38, 2.38)
+texture = ExtResource("4_m8b6p")
