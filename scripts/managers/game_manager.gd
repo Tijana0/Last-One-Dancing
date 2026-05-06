@@ -2,8 +2,10 @@ extends Node
 
 # --- CONFIGURATION ---
 const KILLS_TO_WIN = 999 
-const SPAWN_RANGE_X = 1200.0 # Match background (2500 width)
-const SPAWN_RANGE_Y = 950.0  # Match background (2000 height)
+const SPAWN_MIN_X = -1000.0
+const SPAWN_MAX_X = 1000.0
+const SPAWN_MIN_Y = -300.0
+const SPAWN_MAX_Y = 700.0
 
 # NPC Settings (from feat-npc-ai)
 const NPC_SCENE = preload("res://prefabs/npc.tscn")
@@ -54,8 +56,8 @@ func spawn_npcs():
 
 	for i in range(NPC_COUNT):
 		# Randomize position within boundaries
-		var random_x = randf_range(-SPAWN_RANGE_X + 50, SPAWN_RANGE_X - 50)
-		var random_y = randf_range(-SPAWN_RANGE_Y + 50, SPAWN_RANGE_Y - 50)
+		var random_x = randf_range(SPAWN_MIN_X + 50, SPAWN_MAX_X - 50)
+		var random_y = randf_range(SPAWN_MIN_Y + 50, SPAWN_MAX_Y - 50)
 		var pos = Vector2(random_x, random_y)
 		var npc_name = "NPC_" + str(i)
 		var mask = randi_range(1, 5)  # server picks mask, passes to all clients
@@ -88,8 +90,8 @@ func spawn_item_wave():
 		
 		while not valid_pos and attempts < 20:
 			pos = Vector2(
-				randf_range(-SPAWN_RANGE_X + 100, SPAWN_RANGE_X - 100),
-				randf_range(-SPAWN_RANGE_Y + 100, SPAWN_RANGE_Y - 100)
+				randf_range(SPAWN_MIN_X + 100, SPAWN_MAX_X - 100),
+				randf_range(SPAWN_MIN_Y + 100, SPAWN_MAX_Y - 100)
 			)
 			valid_pos = true
 			

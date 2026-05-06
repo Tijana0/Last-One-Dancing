@@ -29,6 +29,10 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.34, 0.037400004, 0.20382991, 1)
 
+[node name="Background" type="Sprite2D" parent="." unique_id=913476706]
+scale = Vector2(2.38, 2.38)
+texture = ExtResource("4_m8b6p")
+
 [node name="GameManager" parent="." unique_id=454037030 instance=ExtResource("1_gm")]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1796710325]
@@ -81,7 +85,3 @@ shape = SubResource("RectangleShape2D_right")
 position = Vector2(-30, 550)
 scale = Vector2(0.27, 0.27)
 shape = SubResource("RectangleShape2D_left")
-
-[node name="Background" type="Sprite2D" parent="." unique_id=913476706]
-scale = Vector2(2.38, 2.38)
-texture = ExtResource("4_m8b6p")
