@@ -340,9 +340,18 @@ func get_kill_anim() -> String:
 func play_kill_animation() -> void:
 	if not animated_sprite:
 		return
+	
+	var kanim = get_kill_anim()
+	if not animated_sprite.sprite_frames.has_animation(kanim):
+		print("Warning: Animation ", kanim, " not found!")
+		return
+
 	is_killing = true
-	animated_sprite.play(get_kill_anim())
+	animated_sprite.play(kanim)
+	
+	# Wait for animation to finish (non-looping animations fire this signal)
 	await animated_sprite.animation_finished
+	
 	is_killing = false
 	if animated_sprite and animated_sprite.animation != "idle":
 		animated_sprite.play("idle")

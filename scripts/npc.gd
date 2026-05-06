@@ -130,6 +130,8 @@ func die_rpc():
 		if animated_sprite.sprite_frames.has_animation(kanim):
 			animated_sprite.play(kanim)
 			await animated_sprite.animation_finished
+		else:
+			print("Warning: NPC animation ", kanim, " not found!")
 
 	queue_free()
 
