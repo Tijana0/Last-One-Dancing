@@ -61,7 +61,7 @@ func _physics_process(delta):
 		# Item avoidance (simple)
 		var items = get_tree().get_nodes_in_group("pickups")
 		for item in items:
-			if global_position.distance_to(item.global_position) < 80.0:
+			if global_position.distance_to(item.global_position) < 50.0:
 				var push_dir = (global_position - item.global_position).normalized()
 				move_direction = (move_direction + push_dir * 0.5).normalized()
 				time_until_change = 0.5  # Re-evaluate soon

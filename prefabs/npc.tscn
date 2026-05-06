@@ -5,7 +5,7 @@
 [ext_resource type="SpriteFrames" path="res://assets/sprites/masks/mask1_frames.tres" id="3_SF_npc"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1ov3m"]
-size = Vector2(166, 169)
+size = Vector2(60, 140)
 
 [node name="NPC" type="CharacterBody2D" unique_id=1053508573]
 script = ExtResource("1_1ov3m")
