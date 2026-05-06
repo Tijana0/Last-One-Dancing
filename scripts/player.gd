@@ -102,6 +102,13 @@ func _ready():
 		main_camera.enabled = true
 		main_camera.position_smoothing_enabled = true
 		main_camera.make_current()
+		
+		# CAMERA LIMITS (Match background boundaries)
+		main_camera.limit_left = -1250
+		main_camera.limit_right = 1250
+		main_camera.limit_top = -610
+		main_camera.limit_bottom = 1050
+		main_camera.limit_smoothed = true
 
 	if game_over_layer:
 		game_over_layer.visible = false

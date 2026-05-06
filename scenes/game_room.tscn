@@ -21,7 +21,7 @@ size = Vector2(20, 2000)
 script = ExtResource("1_2xdb1")
 
 [node name="ColorRect" type="ColorRect" parent="." unique_id=975775729]
-custom_minimum_size = Vector2(2450, 1650)
+custom_minimum_size = Vector2(2500, 1660)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -30,12 +30,18 @@ grow_vertical = 2
 color = Color(0.34, 0.037400004, 0.20382991, 1)
 
 [node name="Background" type="Sprite2D" parent="." unique_id=913476706]
-scale = Vector2(2.38, 2.38)
+position = Vector2(0, 220)
+scale = Vector2(2.45, 2.45)
 texture = ExtResource("4_m8b6p")
 
 [node name="GameManager" parent="." unique_id=454037030 instance=ExtResource("1_gm")]
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1796710325]
+limit_left = -1250
+limit_top = -610
+limit_right = 1250
+limit_bottom = 1050
+limit_smoothed = true
 
 [node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1384218375]
 spawn_path = NodePath("..")
