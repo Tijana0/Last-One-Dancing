@@ -4,17 +4,53 @@
 [ext_resource type="Texture2D" uid="uid://dlr1ukbh4xwj3" path="res://assets/sprites/masks/spritesheet_mask2_walk_side.png" id="2_ws"]
 [ext_resource type="Texture2D" uid="uid://cp4rh5jusnqjl" path="res://assets/sprites/masks/spritesheet_mask2_kill.png" id="3_kill"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_f31lp"]
-atlas = ExtResource("2_ws")
-region = Rect2(300, 0, 75, 250)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_hynn3"]
-atlas = ExtResource("2_ws")
-region = Rect2(375, 0, 75, 250)
-
 [sub_resource type="AtlasTexture" id="wf_0"]
 atlas = ExtResource("1_wf")
 region = Rect2(0, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="wf_1"]
+atlas = ExtResource("1_wf")
+region = Rect2(100, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="wf_2"]
+atlas = ExtResource("1_wf")
+region = Rect2(200, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="wf_3"]
+atlas = ExtResource("1_wf")
+region = Rect2(300, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="wf_4"]
+atlas = ExtResource("1_wf")
+region = Rect2(400, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="wf_5"]
+atlas = ExtResource("1_wf")
+region = Rect2(500, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="ws_0"]
+atlas = ExtResource("2_ws")
+region = Rect2(0, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="ws_1"]
+atlas = ExtResource("2_ws")
+region = Rect2(100, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="ws_2"]
+atlas = ExtResource("2_ws")
+region = Rect2(200, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="ws_3"]
+atlas = ExtResource("2_ws")
+region = Rect2(300, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="ws_4"]
+atlas = ExtResource("2_ws")
+region = Rect2(400, 0, 100, 250)
+
+[sub_resource type="AtlasTexture" id="ws_5"]
+atlas = ExtResource("2_ws")
+region = Rect2(500, 0, 100, 250)
 
 [sub_resource type="AtlasTexture" id="kill_0"]
 atlas = ExtResource("3_kill")
@@ -64,50 +100,14 @@ region = Rect2(500, 0, 50, 250)
 atlas = ExtResource("3_kill")
 region = Rect2(550, 0, 50, 250)
 
-[sub_resource type="AtlasTexture" id="wf_1"]
-atlas = ExtResource("1_wf")
-region = Rect2(100, 0, 100, 250)
-
-[sub_resource type="AtlasTexture" id="wf_2"]
-atlas = ExtResource("1_wf")
-region = Rect2(200, 0, 100, 250)
-
-[sub_resource type="AtlasTexture" id="wf_3"]
-atlas = ExtResource("1_wf")
-region = Rect2(300, 0, 100, 250)
-
-[sub_resource type="AtlasTexture" id="wf_4"]
-atlas = ExtResource("1_wf")
-region = Rect2(400, 0, 100, 250)
-
-[sub_resource type="AtlasTexture" id="wf_5"]
-atlas = ExtResource("1_wf")
-region = Rect2(500, 0, 100, 250)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_0vbop"]
-atlas = ExtResource("2_ws")
-region = Rect2(375, 0, 75, 250)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_orxxk"]
-atlas = ExtResource("2_ws")
-region = Rect2(300, 0, 75, 250)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_77dg0"]
-atlas = ExtResource("2_ws")
-region = Rect2(150, 0, 75, 250)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_kr6uq"]
-atlas = ExtResource("2_ws")
-region = Rect2(225, 0, 75, 250)
-
 [resource]
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_f31lp")
+"texture": SubResource("ws_4")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_hynn3")
+"texture": SubResource("ws_5")
 }],
 "loop": true,
 "name": &"dance",
@@ -221,8 +221,7 @@ animations = [{
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("wf_3")
-}
-, {
+}, {
 "duration": 1.0,
 "texture": SubResource("wf_4")
 }, {
@@ -249,10 +248,10 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_0vbop")
+"texture": SubResource("ws_2")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_orxxk")
+"texture": SubResource("ws_3")
 }],
 "loop": true,
 "name": &"walk_left",
@@ -260,10 +259,10 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_77dg0")
+"texture": SubResource("ws_0")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_kr6uq")
+"texture": SubResource("ws_1")
 }],
 "loop": true,
 "name": &"walk_right",
