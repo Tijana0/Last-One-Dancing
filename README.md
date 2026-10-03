@@ -4,7 +4,7 @@
 
 The project was built as a team game-jam project, with a strong focus on getting real-time multiplayer working reliably within a short development cycle.
 
-**Play / download:** https://tiliavenice.itch.io/last-one-dancing  
+**Download:** https://tiliavenice.itch.io/last-one-dancing  
 Available for **Windows** and **macOS**.
 
 ## My contribution
