@@ -7,16 +7,18 @@ The project was built as a team game-jam project, with a strong focus on getting
 **Download:** https://tiliavenice.itch.io/last-one-dancing  
 Available for **Windows** and **macOS**.
 
-## My contribution
+## Team & contributions
 
-I worked as the **networking lead and developer** on the project. My main responsibilities included:
+Last One Dancing was built collaboratively during the game jam. The responsibilities overlapped, but the main areas of contribution were:
 
-- Implementing the multiplayer networking foundation
-- Building the host/join flow and player registration
-- Managing multiplayer authority and synchronized player spawning
-- Using RPCs to synchronize game events across peers
-- Contributing to gameplay logic and integration
-- Managing Git/version-control workflows and helping integrate team changes
+| Team member | Main contributions |
+| --- | --- |
+| **Tijana Mijatović** | Networking lead, development, and integration — multiplayer synchronization and game-state systems, player/gameplay systems, item and inventory logic, boss/victory flow, debugging, Git workflows, merges, and integration across the project. |
+| **Diana Ivanova** | Development and animation integration — multiplayer-authoritative player movement, networked NPCs and AI, combat-related systems, mask/sprite integration, and directional character animations. |
+| **Hajar Rhachi** | Lobby/UI and gameplay integration — lobby and loading flow, early NetworkManager integration, game-room scene work, character spritesheets/animation work, and start/win/lose screen assets. |
+| **Angelina Hess** | Art and visual assets — created most of the game's artwork and visual assets. |
+
+My primary responsibility was the **multiplayer/networking and integration side of the project**, alongside broader gameplay and systems work. I also handled much of the Git/version-control coordination needed to bring the team's work together during the jam.
 
 ## Multiplayer features
 
